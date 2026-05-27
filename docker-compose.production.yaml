@@ -2,13 +2,17 @@ version: '3'
 
 services:
   base: &base
-    image: chatwoot/chatwoot:latest
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    image: ramai-chatwoot:latest
     env_file: .env ## Change this file for customized env variables
     volumes:
       - storage_data:/app/storage
 
   rails:
     <<: *base
+    container_name: ramchat-rails
     depends_on:
       - postgres
       - redis
@@ -24,6 +28,7 @@ services:
 
   sidekiq:
     <<: *base
+    container_name: ramchat-sidekiq
     depends_on:
       - postgres
       - redis
@@ -36,26 +41,23 @@ services:
 
   postgres:
     image: pgvector/pgvector:pg16
+    container_name: ramchat-postgres
     restart: always
-    ports:
-      - '127.0.0.1:5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=chatwoot
-      - POSTGRES_USER=postgres
-      # Please provide your own password.
-      - POSTGRES_PASSWORD=
+      - POSTGRES_DB=${POSTGRES_DATABASE}
+      - POSTGRES_USER=${POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 
   redis:
     image: redis:alpine
+    container_name: ramchat-redis
     restart: always
     command: ["sh", "-c", "redis-server --requirepass \"$REDIS_PASSWORD\""]
     env_file: .env
     volumes:
       - redis_data:/data
-    ports:
-      - '127.0.0.1:6379:6379'
 
 volumes:
   storage_data:
