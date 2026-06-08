@@ -20,7 +20,7 @@ export const actions = {
     }
     commit('toggleUpdateStatus', true);
     try {
-      await MessageAPI.update({
+      const { data } = await MessageAPI.update({
         email,
         messageId,
         values: submittedValues,
@@ -29,7 +29,7 @@ export const actions = {
         'conversation/updateMessage',
         {
           id: messageId,
-          content_attributes: {
+          content_attributes: data?.content_attributes || {
             submitted_email: email,
             submitted_values: email ? null : submittedValues,
           },

@@ -190,7 +190,7 @@ class Message < ApplicationRecord
     data = {
       account: account.webhook_data,
       additional_attributes: additional_attributes,
-      content_attributes: content_attributes,
+      content_attributes: decorated_content_attributes,
       content_type: content_type,
       content: webhook_content,
       conversation: conversation.webhook_data,
