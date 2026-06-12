@@ -4,7 +4,7 @@ import { useStore, useMapGetter } from 'dashboard/composables/store';
 import { useI18n } from 'vue-i18n';
 import { useAlert } from 'dashboard/composables';
 import { useVuelidate } from '@vuelidate/core';
-import { required, email } from '@vuelidate/validators';
+import { required, email, minLength } from '@vuelidate/validators';
 import Button from 'dashboard/components-next/button/Button.vue';
 
 const emit = defineEmits(['close']);
@@ -14,17 +14,20 @@ const { t } = useI18n();
 
 const agentName = ref('');
 const agentEmail = ref('');
+const agentPassword = ref('');
 const selectedRoleId = ref('agent');
 
 const rules = {
   agentName: { required },
   agentEmail: { required, email },
+  agentPassword: { required, minLength: minLength(6) },
   selectedRoleId: { required },
 };
 
 const v$ = useVuelidate(rules, {
   agentName,
   agentEmail,
+  agentPassword,
   selectedRoleId,
 });
 
@@ -69,6 +72,7 @@ const addAgent = async () => {
     const payload = {
       name: agentName.value,
       email: agentEmail.value,
+      password: agentPassword.value,
     };
 
     if (selectedRole.value.name.startsWith('custom_')) {
@@ -144,6 +148,21 @@ const addAgent = async () => {
             :placeholder="$t('AGENT_MGMT.ADD.FORM.EMAIL.PLACEHOLDER')"
             @input="v$.agentEmail.$touch"
           />
+        </label>
+      </div>
+
+      <div class="w-full">
+        <label :class="{ error: v$.agentPassword.$error }">
+          {{ $t('AGENT_MGMT.ADD.FORM.PASSWORD.LABEL') }}
+          <input
+            v-model="agentPassword"
+            type="password"
+            :placeholder="$t('AGENT_MGMT.ADD.FORM.PASSWORD.PLACEHOLDER')"
+            @input="v$.agentPassword.$touch"
+          />
+          <span v-if="v$.agentPassword.$error" class="message">
+            {{ $t('AGENT_MGMT.ADD.FORM.PASSWORD.ERROR') }}
+          </span>
         </label>
       </div>
 

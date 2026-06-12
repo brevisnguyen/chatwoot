@@ -9,7 +9,8 @@ class AgentBuilder
   # @param inviter [User] the user who is inviting the agent (Current.user in most cases).
   # @param availability [String] the availability status of the user, defaults to 'offline' if not provided.
   # @param auto_offline [Boolean] the auto offline status of the user.
-  pattr_initialize [:email, { name: '' }, :inviter, :account, { role: :agent }, { availability: :offline }, { auto_offline: false }]
+  # @param password [String] optional password set by the inviter; when present the user is auto-confirmed.
+  pattr_initialize [:email, { name: '' }, :inviter, :account, { role: :agent }, { availability: :offline }, { auto_offline: false }, { password: nil }]
 
   # Creates a user and account user in a transaction.
   # @return [User] the created user.
@@ -30,8 +31,11 @@ class AgentBuilder
     return user if user
 
     @name = email.split('@').first if @name.blank?
-    temp_password = "1!aA#{SecureRandom.alphanumeric(12)}"
-    User.create!(email: email, name: @name, password: temp_password, password_confirmation: temp_password)
+    user_password = password.presence || "1!aA#{SecureRandom.alphanumeric(12)}"
+    user = User.new(email: email, name: @name, password: user_password, password_confirmation: user_password)
+    user.skip_confirmation! if password.present?
+    user.save!
+    user
   end
 
   # Checks if the user needs confirmation.
