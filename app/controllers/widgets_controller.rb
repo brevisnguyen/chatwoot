@@ -2,6 +2,8 @@
 class WidgetsController < ActionController::Base
   include WidgetHelper
 
+  RESET_TOKEN = 'reset'.freeze
+
   before_action :set_global_config
   before_action :set_web_widget
   before_action :ensure_account_is_active
@@ -9,6 +11,7 @@ class WidgetsController < ActionController::Base
   before_action :set_token
   before_action :set_contact
   before_action :build_contact
+  after_action :persist_widget_token
   after_action :allow_iframe_requests
 
   private
@@ -32,7 +35,12 @@ class WidgetsController < ActionController::Base
   end
 
   def set_token
-    @token = permitted_params[:cw_conversation]
+    if permitted_params[:cw_conversation] == RESET_TOKEN
+      cookies.delete(:cw_conversation)
+      @token = nil
+    else
+      @token = permitted_params[:cw_conversation].presence || cookies[:cw_conversation].presence
+    end
     @auth_token_params = if @token.present?
                            ::Widget::TokenService.new(token: @token).decode_token
                          else
@@ -56,6 +64,21 @@ class WidgetsController < ActionController::Base
 
     @contact_inbox, @token = build_contact_inbox_with_token(@web_widget, additional_attributes)
     @contact = @contact_inbox.contact
+  end
+
+  # Persist the auth token as a first-party cookie so a direct widget load
+  # (outside the SDK, which keeps the token in the parent page cookie) resumes
+  # the same session/conversation on reload instead of creating a new one.
+  def persist_widget_token
+    return if @token.blank?
+
+    cookies[:cw_conversation] = {
+      value: @token,
+      expires: 180.days.from_now,
+      httponly: true,
+      same_site: :lax,
+      secure: request.ssl?
+    }
   end
 
   def ensure_account_is_active

@@ -201,10 +201,12 @@ const runSDK = ({ baseUrl, websiteToken }) => {
       Cookies.remove(getUserCookieName());
 
       const iframe = IFrameHelper.getAppFrame();
-      iframe.src = IFrameHelper.getUrl({
+      // Pass a reset sentinel so the server clears any persisted cookie token
+      // and starts a fresh session instead of resuming the previous one.
+      iframe.src = `${IFrameHelper.getUrl({
         baseUrl: window.$chatwoot.baseUrl,
         websiteToken: window.$chatwoot.websiteToken,
-      });
+      })}&cw_conversation=reset`;
 
       window.$chatwoot.resetTriggered = true;
     },
