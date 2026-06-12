@@ -17,10 +17,17 @@ const agentEmail = ref('');
 const agentPassword = ref('');
 const selectedRoleId = ref('agent');
 
+const hasValidPasswordContent = value =>
+  /[a-z]/.test(value) && /[0-9]/.test(value);
+
 const rules = {
   agentName: { required },
   agentEmail: { required, email },
-  agentPassword: { required, minLength: minLength(6) },
+  agentPassword: {
+    required,
+    minLength: minLength(6),
+    hasValidPasswordContent,
+  },
   selectedRoleId: { required },
 };
 

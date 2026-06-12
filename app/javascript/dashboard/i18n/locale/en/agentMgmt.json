@@ -43,7 +43,7 @@
         "PASSWORD": {
           "LABEL": "Password",
           "PLACEHOLDER": "Set a password for the agent to sign in",
-          "ERROR": "Password must be at least 6 characters with uppercase, lowercase, number and special character"
+          "ERROR": "Password must be at least 6 characters with lowercase and number"
         },
         "SUBMIT": "Add Agent"
       },
