@@ -233,5 +233,28 @@ export default {
         conversationType: 'participating',
       }),
     },
+    {
+      path: frontendURL('accounts/:accountId/pending/conversations'),
+      name: 'conversation_pending',
+      meta: {
+        permissions: CONVERSATION_PERMISSIONS,
+      },
+      component: ConversationView,
+      props: () => ({ conversationStatus: 'pending' }),
+    },
+    {
+      path: frontendURL(
+        'accounts/:accountId/pending/conversations/:conversationId'
+      ),
+      name: 'conversation_through_pending',
+      meta: {
+        permissions: CONVERSATION_PERMISSIONS,
+      },
+      component: ConversationView,
+      props: route => ({
+        conversationId: route.params.conversationId,
+        conversationStatus: 'pending',
+      }),
+    },
   ],
 };

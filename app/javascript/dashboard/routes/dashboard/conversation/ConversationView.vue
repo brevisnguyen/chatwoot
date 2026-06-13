@@ -48,6 +48,10 @@ export default {
       type: String,
       default: '',
     },
+    conversationStatus: {
+      type: String,
+      default: '',
+    },
     foldersId: {
       type: [String, Number],
       default: 0,
@@ -202,6 +206,7 @@ export default {
       :label="label"
       :team-id="teamId"
       :conversation-type="conversationType"
+      :conversation-status="conversationStatus"
       :folders-id="foldersId"
       :is-on-expanded-layout="isOnExpandedLayout"
       @conversation-load="onConversationLoad"

@@ -17,6 +17,7 @@ const props = defineProps({
   teamId: { type: [String, Number], default: 0 },
   foldersId: { type: [String, Number], default: 0 },
   conversationType: { type: String, default: '' },
+  conversationStatus: { type: String, default: '' },
   showAssignee: { type: Boolean, default: false },
   isOnExpandedLayout: { type: Boolean, default: false },
 });
@@ -75,6 +76,7 @@ defineExpose({ conversationListRef });
         :team-id="teamId"
         :folders-id="foldersId"
         :conversation-type="conversationType"
+        :conversation-status="conversationStatus"
         :show-assignee="showAssignee"
         :show-expanded="showExpandedCards"
       />

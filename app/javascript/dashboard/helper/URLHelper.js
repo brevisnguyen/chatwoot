@@ -10,6 +10,7 @@ export const conversationUrl = ({
   label,
   teamId,
   conversationType = '',
+  conversationStatus = '',
   foldersId,
 }) => {
   let url = `accounts/${accountId}/conversations/${id}`;
@@ -27,6 +28,8 @@ export const conversationUrl = ({
     url = `accounts/${accountId}/participating/conversations/${id}`;
   } else if (conversationType === 'unattended') {
     url = `accounts/${accountId}/unattended/conversations/${id}`;
+  } else if (conversationStatus === 'pending') {
+    url = `accounts/${accountId}/pending/conversations/${id}`;
   }
   return url;
 };
@@ -34,6 +37,7 @@ export const conversationUrl = ({
 export const conversationListPageURL = ({
   accountId,
   conversationType = '',
+  conversationStatus = '',
   inboxId,
   label,
   teamId,
@@ -55,6 +59,8 @@ export const conversationListPageURL = ({
       unattended: 'unattended/conversations',
     };
     url = `accounts/${accountId}/${urlMap[conversationType]}`;
+  } else if (conversationStatus === 'pending') {
+    url = `accounts/${accountId}/pending/conversations`;
   }
   return frontendURL(url);
 };

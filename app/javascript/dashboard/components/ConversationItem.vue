@@ -13,6 +13,7 @@ const props = defineProps({
   teamId: { type: [String, Number], default: 0 },
   label: { type: String, default: '' },
   conversationType: { type: String, default: '' },
+  conversationStatus: { type: String, default: '' },
   foldersId: { type: [String, Number], default: 0 },
   showAssignee: { type: Boolean, default: false },
   showExpanded: { type: Boolean, default: false },
@@ -88,6 +89,7 @@ const conversationPath = computed(() =>
       label: props.label,
       teamId: props.teamId,
       conversationType: props.conversationType,
+      conversationStatus: props.conversationStatus,
       foldersId: props.foldersId,
     })
   )

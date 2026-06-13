@@ -57,6 +57,7 @@ const backButtonUrl = computed(() => {
     label,
     teamId,
     conversationType: conversationTypeMap[name],
+    conversationStatus: name === 'conversation_through_pending' ? 'pending' : '',
     customViewId,
   });
 });

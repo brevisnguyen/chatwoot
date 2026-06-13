@@ -323,6 +323,12 @@ const menuItems = computed(() => {
           to: accountScopedRoute('conversation_unattended'),
         },
         {
+          name: 'Pending',
+          activeOn: ['conversation_through_pending'],
+          label: t('SIDEBAR.PENDING_CONVERSATIONS'),
+          to: accountScopedRoute('conversation_pending'),
+        },
+        {
           name: 'Folders',
           label: t('SIDEBAR.CUSTOM_VIEWS_FOLDER'),
           icon: 'i-lucide-folder',

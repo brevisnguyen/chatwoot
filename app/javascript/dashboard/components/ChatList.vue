@@ -44,6 +44,7 @@ import {
   isOnMentionsView,
   isOnParticipatingView,
   isOnUnattendedView,
+  isOnPendingView,
 } from '../store/modules/conversations/helpers/actionHelpers';
 import {
   getUserPermissions,
@@ -58,6 +59,7 @@ const props = defineProps({
   teamId: { type: [String, Number], default: 0 },
   label: { type: String, default: '' },
   conversationType: { type: String, default: '' },
+  conversationStatus: { type: String, default: '' },
   foldersId: { type: [String, Number], default: 0 },
   showConversationList: { default: true, type: Boolean },
   isOnExpandedLayout: { default: false, type: Boolean },
@@ -290,6 +292,9 @@ const pageTitle = computed(() => {
   if (props.conversationType === wootConstants.CONVERSATION_TYPE.UNATTENDED) {
     return t('CHAT_LIST.UNATTENDED_HEADING');
   }
+  if (props.conversationStatus === wootConstants.STATUS_TYPE.PENDING) {
+    return t('CHAT_LIST.PENDING_HEADING');
+  }
   if (hasActiveFolders.value) {
     return activeFolder.value.name;
   }
@@ -365,7 +370,8 @@ const uniqueInboxes = computed(() => {
 function setFiltersFromUISettings() {
   const { conversations_filter_by: filterBy = {} } = uiSettings.value;
   const { status, order_by: orderBy } = filterBy;
-  activeStatus.value = status || wootConstants.STATUS_TYPE.OPEN;
+  activeStatus.value =
+    props.conversationStatus || status || wootConstants.STATUS_TYPE.OPEN;
   activeSortBy.value = Object.values(wootConstants.SORT_BY_TYPE).includes(
     orderBy
   )
@@ -632,17 +638,21 @@ function redirectToConversationList() {
   } = route;
 
   let conversationType = '';
+  let conversationStatus = '';
   if (isOnMentionsView({ route: { name } })) {
     conversationType = wootConstants.CONVERSATION_TYPE.MENTION;
   } else if (isOnParticipatingView({ route: { name } })) {
     conversationType = wootConstants.CONVERSATION_TYPE.PARTICIPATING;
   } else if (isOnUnattendedView({ route: { name } })) {
     conversationType = wootConstants.CONVERSATION_TYPE.UNATTENDED;
+  } else if (isOnPendingView({ route: { name } })) {
+    conversationStatus = wootConstants.STATUS_TYPE.PENDING;
   }
   router.push(
     conversationListPageURL({
       accountId,
       conversationType: conversationType,
+      conversationStatus: conversationStatus,
       customViewId: props.foldersId,
       inboxId,
       label,
@@ -847,6 +857,13 @@ watch(
   computed(() => props.conversationType),
   () => resetAndFetchData()
 );
+watch(
+  computed(() => props.conversationStatus),
+  () => {
+    setFiltersFromUISettings();
+    resetAndFetchData();
+  }
+);
 
 watch(activeFolder, (newVal, oldVal) => {
   if (newVal !== oldVal) {
@@ -943,6 +960,7 @@ watch(conversationFilters, (newVal, oldVal) => {
       :team-id="teamId"
       :folders-id="foldersId"
       :conversation-type="conversationType"
+      :conversation-status="conversationStatus"
       :show-assignee="showAssigneeInConversationCard"
       :is-on-expanded-layout="isOnExpandedLayout"
       @load-more="loadMoreConversations"
