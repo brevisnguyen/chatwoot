@@ -10,6 +10,7 @@
     "TAB_HEADING": "Бесіди",
     "MENTION_HEADING": "Згадування",
     "UNATTENDED_HEADING": "Без відповіді",
+    "PENDING_HEADING": "Очікує",
     "SEARCH": {
       "INPUT": "Пошук людей, чатів та збережених відповідей.."
     },

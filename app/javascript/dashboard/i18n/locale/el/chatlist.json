@@ -10,6 +10,7 @@
     "TAB_HEADING": "Συζητήσεις",
     "MENTION_HEADING": "Αναφορές",
     "UNATTENDED_HEADING": "Χωρίς Παρακολούθηση",
+    "PENDING_HEADING": "Εκκρεμεί",
     "SEARCH": {
       "INPUT": "Αναζήτηση Ανθρώπων, συνομιλιών, αποθηκευμένων απαντήσεων .."
     },

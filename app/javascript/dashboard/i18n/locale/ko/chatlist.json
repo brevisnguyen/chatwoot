@@ -10,6 +10,7 @@
     "TAB_HEADING": "대화",
     "MENTION_HEADING": "멘션",
     "UNATTENDED_HEADING": "미응대",
+    "PENDING_HEADING": "보류 중",
     "SEARCH": {
       "INPUT": "사람, 채팅, 저장된 응답 검색..."
     },

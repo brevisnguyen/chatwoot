@@ -10,6 +10,7 @@
     "TAB_HEADING": "對話",
     "MENTION_HEADING": "被提及",
     "UNATTENDED_HEADING": "無人處理",
+    "PENDING_HEADING": "待處理",
     "SEARCH": {
       "INPUT": "搜尋人員、對話、預設回覆…"
     },

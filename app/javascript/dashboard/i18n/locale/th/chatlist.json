@@ -10,6 +10,7 @@
     "TAB_HEADING": "การสนทนา",
     "MENTION_HEADING": "กล่าวถึง",
     "UNATTENDED_HEADING": "ไม่ได้เข้าร่วม",
+    "PENDING_HEADING": "กำลังร้องขอ",
     "SEARCH": {
       "INPUT": "ค้นหาผู้คน, เเชท, หรือการตอบกลับ"
     },

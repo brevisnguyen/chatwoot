@@ -305,6 +305,7 @@
     "MENTIONED_CONVERSATIONS": "멘션",
     "PARTICIPATING_CONVERSATIONS": "참여 중",
     "UNATTENDED_CONVERSATIONS": "미응답",
+    "PENDING_CONVERSATIONS": "보류 중",
     "REPORTS": "보고서",
     "SETTINGS": "설정",
     "CONTACTS": "연락처",

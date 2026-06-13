@@ -10,6 +10,7 @@
     "TAB_HEADING": "Keskustelut",
     "MENTION_HEADING": "Mentions",
     "UNATTENDED_HEADING": "Unattended",
+    "PENDING_HEADING": "Pending",
     "SEARCH": {
       "INPUT": "Etsi ihmisiä, keskusteluita, tallennettuja vastauksia..."
     },

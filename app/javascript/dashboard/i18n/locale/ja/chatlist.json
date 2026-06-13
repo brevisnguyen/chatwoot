@@ -10,6 +10,7 @@
     "TAB_HEADING": "会話データ",
     "MENTION_HEADING": "メンション",
     "UNATTENDED_HEADING": "未対応",
+    "PENDING_HEADING": "保留中",
     "SEARCH": {
       "INPUT": "人物、チャット、保存された返信を検索する"
     },
