@@ -1,4 +1,9 @@
 {
+  "AGENT_CONVERSATIONS": {
+    "HEADER": "客服人員",
+    "NO_AGENTS": "找不到客服人員",
+    "NO_CONVERSATIONS": "沒有對話"
+  },
   "CONVERSATION": {
     "SELECT_A_CONVERSATION": "請從左側窗格選擇一個對話",
     "CSAT_REPLY_MESSAGE": "請為此對話評分",

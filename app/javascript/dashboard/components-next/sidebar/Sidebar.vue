@@ -198,6 +198,7 @@ onMounted(() => {
   store.dispatch('inboxes/get');
   store.dispatch('notifications/unReadCount');
   store.dispatch('teams/get');
+  store.dispatch('agents/get');
   store.dispatch('attributes/get');
   store.dispatch('customViews/get', 'conversation');
   store.dispatch('customViews/get', 'contact');
@@ -327,6 +328,13 @@ const menuItems = computed(() => {
           activeOn: ['conversation_through_pending'],
           label: t('SIDEBAR.PENDING_CONVERSATIONS'),
           to: accountScopedRoute('conversation_pending'),
+        },
+        {
+          name: 'Agents',
+          label: t('SIDEBAR.AGENTS_OVERVIEW'),
+          icon: 'i-lucide-headset',
+          activeOn: ['agent_conversations', 'agent_conversations_detail'],
+          to: accountScopedRoute('agent_conversations'),
         },
         {
           name: 'Folders',

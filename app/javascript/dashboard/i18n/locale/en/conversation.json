@@ -1,4 +1,9 @@
 {
+  "AGENT_CONVERSATIONS": {
+    "HEADER": "Agents",
+    "NO_AGENTS": "No agents found",
+    "NO_CONVERSATIONS": "No conversations"
+  },
   "CONVERSATION": {
     "SELECT_A_CONVERSATION": "Please select a conversation from left pane",
     "CSAT_REPLY_MESSAGE": "Please rate the conversation",
