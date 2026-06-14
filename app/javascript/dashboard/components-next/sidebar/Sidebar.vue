@@ -332,7 +332,6 @@ const menuItems = computed(() => {
         {
           name: 'Agents',
           label: t('SIDEBAR.AGENTS_OVERVIEW'),
-          icon: 'i-lucide-headset',
           activeOn: ['agent_conversations', 'agent_conversations_detail'],
           to: accountScopedRoute('agent_conversations'),
         },

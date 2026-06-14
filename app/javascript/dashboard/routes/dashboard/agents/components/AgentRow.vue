@@ -1,8 +1,10 @@
 <script setup>
 import { computed } from 'vue';
+import { useStore, useMapGetter } from 'dashboard/composables/store';
 import Avatar from 'dashboard/components-next/avatar/Avatar.vue';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
 import Spinner from 'dashboard/components-next/spinner/Spinner.vue';
+import ConversationCard from 'dashboard/components/widgets/conversation/ConversationCard.vue';
 
 const props = defineProps({
   agent: {
@@ -33,14 +35,29 @@ const props = defineProps({
 
 const emit = defineEmits(['toggle', 'selectConversation']);
 
-const conversationLabel = conversation =>
-  conversation.meta?.sender?.name || `#${conversation.id}`;
+const store = useStore();
+const inboxesList = useMapGetter('inboxes/getInboxes');
+
+const showInboxName = computed(() => inboxesList.value.length > 1);
+
+const getContact = conversation => conversation.meta?.sender || {};
+
+const getAssignee = conversation => conversation.meta?.assignee || {};
+
+const getInbox = conversation => {
+  const inboxId = conversation.inbox_id;
+  return inboxId ? store.getters['inboxes/getInbox'](inboxId) : {};
+};
+
+const isActiveConversation = conversation =>
+  Number(props.activeConversationId) === conversation.id;
 </script>
 
 <template>
   <div class="border-b border-n-weak">
     <button
       class="flex items-center w-full gap-3 px-4 py-3 text-left rtl:text-right hover:bg-n-alpha-1"
+      :class="{ 'bg-n-alpha-1': isExpanded }"
       @click="emit('toggle', agent.id)"
     >
       <Avatar
@@ -48,7 +65,6 @@ const conversationLabel = conversation =>
         :name="agent.name"
         :status="agent.availability_status"
         :size="32"
-        hide-offline-status
         rounded-full
       />
       <div class="flex flex-col min-w-0">
@@ -74,7 +90,10 @@ const conversationLabel = conversation =>
       </div>
     </button>
 
-    <div v-if="isExpanded" class="pb-2">
+    <div
+      v-if="isExpanded"
+      class="bg-n-background ltr:ml-7 rtl:mr-7 ltr:pl-2 rtl:pr-2 ltr:border-l rtl:border-r border-n-weak"
+    >
       <div v-if="isLoading" class="flex justify-center py-4 text-n-slate-11">
         <Spinner :size="20" />
       </div>
@@ -84,25 +103,18 @@ const conversationLabel = conversation =>
       >
         {{ $t('AGENT_CONVERSATIONS.NO_CONVERSATIONS') }}
       </span>
-      <ul v-else class="m-0 list-none">
-        <li v-for="conversation in conversations" :key="conversation.id">
-          <button
-            class="flex items-center w-full gap-2 py-2 text-sm text-left rtl:text-right ps-14 pe-4 hover:bg-n-alpha-1"
-            :class="{
-              'bg-n-alpha-2 text-n-slate-12':
-                Number(activeConversationId) === conversation.id,
-              'text-n-slate-11':
-                Number(activeConversationId) !== conversation.id,
-            }"
-            @click="emit('selectConversation', conversation.id)"
-          >
-            <span class="truncate">{{ conversationLabel(conversation) }}</span>
-            <span class="text-xs capitalize ms-auto text-n-slate-10">
-              {{ conversation.status }}
-            </span>
-          </button>
-        </li>
-      </ul>
+      <ConversationCard
+        v-for="conversation in conversations"
+        v-else
+        :key="conversation.id"
+        :chat="conversation"
+        :current-contact="getContact(conversation)"
+        :assignee="getAssignee(conversation)"
+        :inbox="getInbox(conversation)"
+        :is-active-chat="isActiveConversation(conversation)"
+        :show-inbox-name="showInboxName"
+        @click="emit('selectConversation', conversation.id)"
+      />
     </div>
   </div>
 </template>
