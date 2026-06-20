@@ -75,6 +75,9 @@ class Conversation < ApplicationRecord
   enum status: { open: 0, resolved: 1, pending: 2, snoozed: 3 }
   enum priority: { low: 0, medium: 1, high: 2, urgent: 3 }
 
+  # Statuses eligible for auto-resolution; `resolved` is intentionally excluded.
+  AUTO_RESOLVABLE_STATUSES = %i[open pending snoozed].freeze
+
   scope :unassigned, -> { where(assignee_id: nil) }
   scope :assigned, -> { where.not(assignee_id: nil) }
   scope :assigned_to, ->(agent) { where(assignee_id: agent.id) }
@@ -85,12 +88,12 @@ class Conversation < ApplicationRecord
   scope :resolvable_not_waiting, lambda { |auto_resolve_after|
     return none if auto_resolve_after.to_i.zero?
 
-    open.where('last_activity_at < ? AND waiting_since IS NULL', Time.now.utc - auto_resolve_after.minutes)
+    where(status: AUTO_RESOLVABLE_STATUSES).where('last_activity_at < ? AND waiting_since IS NULL', Time.now.utc - auto_resolve_after.minutes)
   }
   scope :resolvable_all, lambda { |auto_resolve_after|
     return none if auto_resolve_after.to_i.zero?
 
-    open.where('last_activity_at < ?', Time.now.utc - auto_resolve_after.minutes)
+    where(status: AUTO_RESOLVABLE_STATUSES).where('last_activity_at < ?', Time.now.utc - auto_resolve_after.minutes)
   }
 
   scope :last_user_message_at, lambda {

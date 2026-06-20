@@ -46,7 +46,7 @@
       },
       "AUTO_RESOLVE": {
         "TITLE": "Auto-resolve conversations",
-        "NOTE": "This configuration would allow you to automatically resolve the conversation after a certain period of inactivity.",
+        "NOTE": "This configuration would allow you to automatically resolve open, pending, and snoozed conversations after a certain period of inactivity.",
         "DURATION": {
           "LABEL": "Inactivity duration",
           "HELP": "Time period of inactivity after which conversation is auto-resolved",

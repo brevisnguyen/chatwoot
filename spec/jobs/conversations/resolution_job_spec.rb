@@ -48,6 +48,46 @@ RSpec.describe Conversations::ResolutionJob do
     end
   end
 
+  context 'when conversations are pending or snoozed' do
+    before do
+      account.update(auto_resolve_after: 14_400, auto_resolve_ignore_waiting: false) # 10 days in minutes
+    end
+
+    it 'resolves pending conversations' do
+      pending_conversation = create(:conversation, account: account, status: :pending, last_activity_at: 13.days.ago)
+      described_class.perform_now(account: account)
+      expect(pending_conversation.reload.status).to eq('resolved')
+    end
+
+    it 'resolves snoozed conversations and clears snoozed_until' do
+      snoozed_conversation = create(:conversation, account: account, status: :snoozed, snoozed_until: 2.days.from_now,
+                                                   last_activity_at: 13.days.ago)
+      described_class.perform_now(account: account)
+      expect(snoozed_conversation.reload.status).to eq('resolved')
+      expect(snoozed_conversation.reload.snoozed_until).to be_nil
+    end
+
+    it 'does not pick up already resolved conversations' do
+      resolved_conversation = create(:conversation, account: account, status: :resolved, last_activity_at: 13.days.ago)
+      expect(account.conversations.resolvable_all(account.auto_resolve_after)).not_to include(resolved_conversation)
+      described_class.perform_now(account: account)
+      expect(resolved_conversation.reload.status).to eq('resolved')
+    end
+  end
+
+  context 'when auto_resolve_ignore_waiting is true with pending or snoozed conversations' do
+    before do
+      account.update(auto_resolve_after: 14_400, auto_resolve_ignore_waiting: true) # 10 days in minutes
+    end
+
+    it 'skips snoozed conversations that are waiting for an agent reply' do
+      snoozed_waiting = create(:conversation, account: account, status: :snoozed, snoozed_until: 2.days.from_now,
+                                              last_activity_at: 13.days.ago, waiting_since: 13.days.ago)
+      described_class.perform_now(account: account)
+      expect(snoozed_waiting.reload.status).to eq('snoozed')
+    end
+  end
+
   # When a contact is deleted, there's a brief window (~50-150ms) where contact_id becomes nil
   # but conversations still exist. If ResolutionJob runs during this window, muted? can crash
   # trying to call blocked? on nil. Fixes # (issue).
