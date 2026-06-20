@@ -11,6 +11,11 @@ export default {
     PENDING: 'pending',
     SNOOZED: 'snoozed',
     ALL: 'all',
+    NOT_RESOLVED: 'not_resolved',
+  },
+  ASSIGNEE_TYPE_EXTRA: {
+    AGENT_BOT: 'agent_bot',
+    COLLABORATORS: 'collaborators',
   },
   CONVERSATION_TYPE: {
     MENTION: 'mention',

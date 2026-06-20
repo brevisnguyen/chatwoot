@@ -3,8 +3,7 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
   include DateRangeHelper
   include HmacConcern
 
-  before_action :conversation, except: [:index, :meta, :search, :create, :filter, :assignee_summary]
-  before_action :check_admin_authorization?, only: [:assignee_summary]
+  before_action :conversation, except: [:index, :meta, :search, :create, :filter]
   before_action :inbox, :contact, :contact_inbox, only: [:create]
 
   ATTACHMENT_RESULTS_PER_PAGE = 100
@@ -24,15 +23,6 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
     result = conversation_finder.perform
     @conversations = result[:conversations]
     @conversations_count = result[:count]
-  end
-
-  def assignee_summary
-    scope = Conversations::PermissionFilterService.new(
-      Current.account.conversations.where.not(status: :resolved).where.not(assignee_id: nil),
-      Current.user,
-      Current.account
-    ).perform
-    render json: scope.group(:assignee_id).count
   end
 
   def attachments

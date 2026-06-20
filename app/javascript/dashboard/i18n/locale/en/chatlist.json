@@ -11,6 +11,8 @@
     "MENTION_HEADING": "Mentions",
     "UNATTENDED_HEADING": "Unattended",
     "PENDING_HEADING": "Pending",
+    "CURRENT_HEADING": "Current",
+    "RESOLVED_HEADING": "Resolved",
     "SEARCH": {
       "INPUT": "Search for People, Chats, Saved Replies .."
     },
@@ -18,7 +20,9 @@
     "ASSIGNEE_TYPE_TABS": {
       "me": "Mine",
       "unassigned": "Unassigned",
-      "all": "All"
+      "all": "All",
+      "agent_bot": "AI",
+      "collaborators": "Collaborators"
     },
     "CHAT_STATUS_FILTER_ITEMS": {
       "open": {
@@ -35,6 +39,9 @@
       },
       "all": {
         "TEXT": "All"
+      },
+      "not_resolved": {
+        "TEXT": "Current"
       }
     },
     "VIEW_FILTER": "View",

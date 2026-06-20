@@ -18,7 +18,9 @@
     "ASSIGNEE_TYPE_TABS": {
       "me": "我的",
       "unassigned": "未分配的",
-      "all": "所有的"
+      "all": "所有的",
+      "agent_bot": "AI",
+      "collaborators": "同事对话"
     },
     "CHAT_STATUS_FILTER_ITEMS": {
       "open": {
@@ -35,6 +37,9 @@
       },
       "all": {
         "TEXT": "所有的"
+      },
+      "not_resolved": {
+        "TEXT": "进行中"
       }
     },
     "VIEW_FILTER": "查看",

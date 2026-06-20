@@ -9,6 +9,7 @@ import {
 
 import ChatListHeader from './ChatListHeader.vue';
 import ConversationList from './ConversationList.vue';
+import CollaboratorConversations from './CollaboratorConversations.vue';
 import Dialog from 'dashboard/components-next/dialog/Dialog.vue';
 import ConversationFilter from 'next/filter/ConversationFilter.vue';
 import SaveCustomView from 'next/filter/SaveCustomView.vue';
@@ -44,7 +45,8 @@ import {
   isOnMentionsView,
   isOnParticipatingView,
   isOnUnattendedView,
-  isOnPendingView,
+  isOnCurrentView,
+  isOnResolvedView,
 } from '../store/modules/conversations/helpers/actionHelpers';
 import {
   getUserPermissions,
@@ -68,6 +70,45 @@ const props = defineProps({
 const emit = defineEmits(['conversationLoad']);
 const { uiSettings } = useUISettings();
 const { t } = useI18n();
+
+const getFilterAttributeName = attributeI18nKey => {
+  const attributeNames = {
+    STATUS: t('FILTER.ATTRIBUTES.STATUS'),
+    ASSIGNEE_NAME: t('FILTER.ATTRIBUTES.ASSIGNEE_NAME'),
+    PRIORITY: t('FILTER.ATTRIBUTES.PRIORITY'),
+    INBOX_NAME: t('FILTER.ATTRIBUTES.INBOX_NAME'),
+    TEAM_NAME: t('FILTER.ATTRIBUTES.TEAM_NAME'),
+    CONTACT: t('FILTER.ATTRIBUTES.CONTACT'),
+    CONVERSATION_IDENTIFIER: t('FILTER.ATTRIBUTES.CONVERSATION_IDENTIFIER'),
+    CAMPAIGN_NAME: t('FILTER.ATTRIBUTES.CAMPAIGN_NAME'),
+    LABELS: t('FILTER.ATTRIBUTES.LABELS'),
+    BROWSER_LANGUAGE: t('FILTER.ATTRIBUTES.BROWSER_LANGUAGE'),
+    REFERER_LINK: t('FILTER.ATTRIBUTES.REFERER_LINK'),
+    CREATED_AT: t('FILTER.ATTRIBUTES.CREATED_AT'),
+    LAST_ACTIVITY: t('FILTER.ATTRIBUTES.LAST_ACTIVITY'),
+  };
+
+  return attributeNames[attributeI18nKey] || attributeI18nKey;
+};
+
+const getAssigneeTabName = key => {
+  const tabNames = {
+    [wootConstants.ASSIGNEE_TYPE.ME]: t('CHAT_LIST.ASSIGNEE_TYPE_TABS.me'),
+    [wootConstants.ASSIGNEE_TYPE.UNASSIGNED]: t(
+      'CHAT_LIST.ASSIGNEE_TYPE_TABS.unassigned'
+    ),
+    [wootConstants.ASSIGNEE_TYPE.ALL]: t('CHAT_LIST.ASSIGNEE_TYPE_TABS.all'),
+    [wootConstants.ASSIGNEE_TYPE_EXTRA.AGENT_BOT]: t(
+      'CHAT_LIST.ASSIGNEE_TYPE_TABS.agent_bot'
+    ),
+    [wootConstants.ASSIGNEE_TYPE_EXTRA.COLLABORATORS]: t(
+      'CHAT_LIST.ASSIGNEE_TYPE_TABS.collaborators'
+    ),
+  };
+
+  return tabNames[key] || key;
+};
+
 const router = useRouter();
 const route = useRoute();
 const store = useStore();
@@ -88,7 +129,7 @@ const appliedFilter = ref([]);
 const advancedFilterTypes = ref(
   advancedFilterOptions.map(filter => ({
     ...filter,
-    attributeName: t(`FILTER.ATTRIBUTES.${filter.attributeI18nKey}`),
+    attributeName: getFilterAttributeName(filter.attributeI18nKey),
   }))
 );
 
@@ -98,6 +139,8 @@ const mineChatsList = useMapGetter('getMineChats');
 const allChatList = useMapGetter('getAllStatusChats');
 const unAssignedChatsList = useMapGetter('getUnAssignedChats');
 const participatingChatsList = useMapGetter('getParticipatingChats');
+const botChatsList = useMapGetter('getBotChats');
+const collaboratorsChatsList = useMapGetter('getCollaboratorsChats');
 const chatListLoading = useMapGetter('getChatListLoadingStatus');
 const activeInbox = useMapGetter('getSelectedInbox');
 const conversationStats = useMapGetter('conversationStats/getStats');
@@ -177,14 +220,50 @@ const userPermissions = computed(() => {
   return getUserPermissions(currentUser.value, currentAccountId.value);
 });
 
+const isCurrentView = computed(() => isOnCurrentView({ route }));
+
+const isResolvedView = computed(() => isOnResolvedView({ route }));
+
+const usesStatusModeTabs = computed(
+  () => isCurrentView.value || isResolvedView.value
+);
+
+const isCollaboratorsTab = computed(
+  () =>
+    usesStatusModeTabs.value &&
+    activeAssigneeTab.value === wootConstants.ASSIGNEE_TYPE_EXTRA.COLLABORATORS
+);
+
+const statusModeTabItems = computed(() => {
+  return [
+    { key: wootConstants.ASSIGNEE_TYPE.ME, count: 'mineCount' },
+    {
+      key: wootConstants.ASSIGNEE_TYPE_EXTRA.AGENT_BOT,
+      count: 'botCount',
+    },
+    {
+      key: wootConstants.ASSIGNEE_TYPE_EXTRA.COLLABORATORS,
+      count: 'collaboratorsCount',
+    },
+  ].map(({ key, count: countKey }) => ({
+    key,
+    name: getAssigneeTabName(key),
+    count: conversationStats.value[countKey] || 0,
+  }));
+});
+
 const assigneeTabItems = computed(() => {
+  if (usesStatusModeTabs.value) {
+    return statusModeTabItems.value;
+  }
+
   return filterItemsByPermission(
     ASSIGNEE_TYPE_TAB_PERMISSIONS,
     userPermissions.value,
     item => item.permissions
   ).map(({ key, count: countKey }) => ({
     key,
-    name: t(`CHAT_LIST.ASSIGNEE_TYPE_TABS.${key}`),
+    name: getAssigneeTabName(key),
     count: conversationStats.value[countKey] || 0,
   }));
 });
@@ -192,7 +271,8 @@ const assigneeTabItems = computed(() => {
 const showAssigneeInConversationCard = computed(() => {
   return (
     hasAppliedFiltersOrActiveFolders.value ||
-    activeAssigneeTab.value === wootConstants.ASSIGNEE_TYPE.ALL
+    activeAssigneeTab.value === wootConstants.ASSIGNEE_TYPE.ALL ||
+    activeAssigneeTab.value === wootConstants.ASSIGNEE_TYPE_EXTRA.AGENT_BOT
   );
 });
 
@@ -222,10 +302,10 @@ const conversationCustomAttributes = useFunctionGetter(
 );
 
 const activeAssigneeTabCount = computed(() => {
-  const count = assigneeTabItems.value.find(
+  const activeTab = assigneeTabItems.value.find(
     item => item.key === activeAssigneeTab.value
-  ).count;
-  return count;
+  );
+  return activeTab?.count ?? 0;
 });
 
 const conversationListPagination = computed(() => {
@@ -292,8 +372,11 @@ const pageTitle = computed(() => {
   if (props.conversationType === wootConstants.CONVERSATION_TYPE.UNATTENDED) {
     return t('CHAT_LIST.UNATTENDED_HEADING');
   }
-  if (props.conversationStatus === wootConstants.STATUS_TYPE.PENDING) {
-    return t('CHAT_LIST.PENDING_HEADING');
+  if (props.conversationStatus === wootConstants.STATUS_TYPE.NOT_RESOLVED) {
+    return t('CHAT_LIST.CURRENT_HEADING');
+  }
+  if (props.conversationStatus === wootConstants.STATUS_TYPE.RESOLVED) {
+    return t('CHAT_LIST.RESOLVED_HEADING');
   }
   if (hasActiveFolders.value) {
     return activeFolder.value.name;
@@ -337,6 +420,15 @@ const conversationList = computed(() => {
       localConversationList = [...mineChatsList.value(filters)];
     } else if (activeAssigneeTab.value === 'unassigned') {
       localConversationList = [...unAssignedChatsList.value(filters)];
+    } else if (
+      activeAssigneeTab.value === wootConstants.ASSIGNEE_TYPE_EXTRA.AGENT_BOT
+    ) {
+      localConversationList = [...botChatsList.value(filters)];
+    } else if (
+      activeAssigneeTab.value ===
+      wootConstants.ASSIGNEE_TYPE_EXTRA.COLLABORATORS
+    ) {
+      localConversationList = [...collaboratorsChatsList.value(filters)];
     } else {
       localConversationList = [...allChatList.value(filters)];
     }
@@ -661,8 +753,10 @@ function redirectToConversationList() {
     conversationType = wootConstants.CONVERSATION_TYPE.PARTICIPATING;
   } else if (isOnUnattendedView({ route: { name } })) {
     conversationType = wootConstants.CONVERSATION_TYPE.UNATTENDED;
-  } else if (isOnPendingView({ route: { name } })) {
-    conversationStatus = wootConstants.STATUS_TYPE.PENDING;
+  } else if (isOnCurrentView({ route: { name } })) {
+    conversationStatus = wootConstants.STATUS_TYPE.NOT_RESOLVED;
+  } else if (isOnResolvedView({ route: { name } })) {
+    conversationStatus = wootConstants.STATUS_TYPE.RESOLVED;
   }
   router.push(
     conversationListPageURL({
@@ -876,6 +970,9 @@ watch(
 watch(
   computed(() => props.conversationStatus),
   () => {
+    // The set of available assignee tabs differs between the current view and
+    // the standard views, so reset to a tab valid in both before refetching.
+    activeAssigneeTab.value = wootConstants.ASSIGNEE_TYPE.ME;
     setFiltersFromUISettings();
     resetAndFetchData();
   }
@@ -968,7 +1065,22 @@ watch(conversationFilters, (newVal, oldVal) => {
       :class="isOnExpandedLayout && 'sm:!w-[24rem] !w-full'"
       @select-all-conversations="toggleSelectAll"
     />
+    <CollaboratorConversations
+      v-if="isCollaboratorsTab"
+      :conversation-list="conversationList"
+      :is-loading="chatListLoading"
+      :show-end-of-list-message="showEndOfListMessage"
+      :label="label"
+      :team-id="teamId"
+      :folders-id="foldersId"
+      :conversation-type="conversationType"
+      :conversation-status="conversationStatus"
+      :show-assignee="showAssigneeInConversationCard"
+      :is-on-expanded-layout="isOnExpandedLayout"
+      @load-more="loadMoreConversations"
+    />
     <ConversationList
+      v-else
       :conversation-list="conversationList"
       :is-loading="chatListLoading"
       :show-end-of-list-message="showEndOfListMessage"

@@ -90,7 +90,8 @@ export const isAConversationRoute = (
     'team_conversations',
     'folder_conversations',
     'conversation_participating',
-    'conversation_pending',
+    'current_conversations',
+    'resolved_conversations',
   ];
   const extendedRoutes = [
     'inbox_conversation',
@@ -101,7 +102,8 @@ export const isAConversationRoute = (
     'conversations_through_team',
     'conversations_through_folders',
     'conversation_through_participating',
-    'conversation_through_pending',
+    'conversation_through_current',
+    'conversation_through_resolved',
   ];
 
   const routes = [
@@ -128,8 +130,10 @@ export const getConversationDashboardRoute = routeName => {
       return 'folder_conversations';
     case 'conversation_through_participating':
       return 'conversation_participating';
-    case 'conversation_through_pending':
-      return 'conversation_pending';
+    case 'conversation_through_current':
+      return 'current_conversations';
+    case 'conversation_through_resolved':
+      return 'resolved_conversations';
     case 'conversation_through_inbox':
       return 'inbox_dashboard';
     default:

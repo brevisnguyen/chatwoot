@@ -38,12 +38,20 @@ export const isOnParticipatingView = ({ route: { name: routeName } }) => {
   return PARTICIPATING_ROUTES.includes(routeName);
 };
 
-export const isOnPendingView = ({ route: { name: routeName } }) => {
-  const PENDING_ROUTES = [
-    'conversation_pending',
-    'conversation_through_pending',
+export const isOnCurrentView = ({ route: { name: routeName } }) => {
+  const CURRENT_ROUTES = [
+    'current_conversations',
+    'conversation_through_current',
   ];
-  return PENDING_ROUTES.includes(routeName);
+  return CURRENT_ROUTES.includes(routeName);
+};
+
+export const isOnResolvedView = ({ route: { name: routeName } }) => {
+  const RESOLVED_ROUTES = [
+    'resolved_conversations',
+    'conversation_through_resolved',
+  ];
+  return RESOLVED_ROUTES.includes(routeName);
 };
 
 export const isOnFoldersView = ({ route: { name: routeName } }) => {

@@ -286,11 +286,7 @@ export default {
             {{ imageUploads[item.name].errorMessage }}
           </span>
           <span
-            v-else-if="
-              hasSubmitted &&
-              item.required &&
-              !formValues[item.name]
-            "
+            v-else-if="hasSubmitted && item.required && !formValues[item.name]"
             class="text-n-ruby-9 text-xs mt-1 block"
           >
             {{ $t('CHAT_FORM.INVALID.IMAGE_REQUIRED') }}

@@ -234,26 +234,49 @@ export default {
       }),
     },
     {
-      path: frontendURL('accounts/:accountId/pending/conversations'),
-      name: 'conversation_pending',
+      path: frontendURL('accounts/:accountId/current/conversations'),
+      name: 'current_conversations',
       meta: {
         permissions: CONVERSATION_PERMISSIONS,
       },
       component: ConversationView,
-      props: () => ({ conversationStatus: 'pending' }),
+      props: () => ({ conversationStatus: 'not_resolved' }),
     },
     {
       path: frontendURL(
-        'accounts/:accountId/pending/conversations/:conversationId'
+        'accounts/:accountId/current/conversations/:conversationId'
       ),
-      name: 'conversation_through_pending',
+      name: 'conversation_through_current',
       meta: {
         permissions: CONVERSATION_PERMISSIONS,
       },
       component: ConversationView,
       props: route => ({
         conversationId: route.params.conversationId,
-        conversationStatus: 'pending',
+        conversationStatus: 'not_resolved',
+      }),
+    },
+    {
+      path: frontendURL('accounts/:accountId/resolved/conversations'),
+      name: 'resolved_conversations',
+      meta: {
+        permissions: CONVERSATION_PERMISSIONS,
+      },
+      component: ConversationView,
+      props: () => ({ conversationStatus: 'resolved' }),
+    },
+    {
+      path: frontendURL(
+        'accounts/:accountId/resolved/conversations/:conversationId'
+      ),
+      name: 'conversation_through_resolved',
+      meta: {
+        permissions: CONVERSATION_PERMISSIONS,
+      },
+      component: ConversationView,
+      props: route => ({
+        conversationId: route.params.conversationId,
+        conversationStatus: 'resolved',
       }),
     },
   ],

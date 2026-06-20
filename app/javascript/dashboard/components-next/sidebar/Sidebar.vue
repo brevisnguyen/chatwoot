@@ -332,13 +332,28 @@ const menuItems = computed(() => {
       icon: 'i-lucide-message-circle',
       children: [
         {
-          name: 'All',
+          name: 'Current',
           label: t('SIDEBAR.ALL_CONVERSATIONS'),
-          icon: 'i-lucide-inbox',
+          icon: 'i-lucide-circle-dot',
           badgeCount: allUnreadCount.value,
-          activeOn: ['inbox_conversation'],
-          to: accountScopedRoute('home'),
+          activeOn: ['conversation_through_current'],
+          to: accountScopedRoute('current_conversations'),
         },
+        {
+          name: 'Resolved',
+          label: t('SIDEBAR.RESOLVED_CONVERSATIONS'),
+          icon: 'i-lucide-circle-check',
+          activeOn: ['conversation_through_resolved'],
+          to: accountScopedRoute('resolved_conversations'),
+        },
+        // {
+        //   name: 'All',
+        //   label: t('SIDEBAR.ALL_CONVERSATIONS'),
+        //   icon: 'i-lucide-inbox',
+        //   badgeCount: allUnreadCount.value,
+        //   activeOn: ['inbox_conversation'],
+        //   to: accountScopedRoute('home'),
+        // },
         {
           name: 'Mentions',
           label: t('SIDEBAR.MENTIONED_CONVERSATIONS'),
@@ -359,18 +374,6 @@ const menuItems = computed(() => {
           label: t('SIDEBAR.UNATTENDED_CONVERSATIONS'),
           icon: 'i-lucide-clock-alert',
           to: accountScopedRoute('conversation_unattended'),
-        },
-        {
-          name: 'Pending',
-          activeOn: ['conversation_through_pending'],
-          label: t('SIDEBAR.PENDING_CONVERSATIONS'),
-          to: accountScopedRoute('conversation_pending'),
-        },
-        {
-          name: 'Agents',
-          label: t('SIDEBAR.AGENTS_OVERVIEW'),
-          activeOn: ['agent_conversations', 'agent_conversations_detail'],
-          to: accountScopedRoute('agent_conversations'),
         },
         {
           name: 'Folders',

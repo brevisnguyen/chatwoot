@@ -18,7 +18,9 @@
     "ASSIGNEE_TYPE_TABS": {
       "me": "Của tôi",
       "unassigned": "Chưa được phân công",
-      "all": "Tất cả"
+      "all": "Tất cả",
+      "agent_bot": "AI",
+      "collaborators": "Đồng nghiệp"
     },
     "CHAT_STATUS_FILTER_ITEMS": {
       "open": {
@@ -35,6 +37,9 @@
       },
       "all": {
         "TEXT": "Tất cả"
+      },
+      "not_resolved": {
+        "TEXT": "Đang xử lý"
       }
     },
     "VIEW_FILTER": "Xem",

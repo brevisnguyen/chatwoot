@@ -117,6 +117,26 @@ const getters = {
       return applyPageFilters(conversation, activeFilters);
     });
   },
+  getBotChats: _state => activeFilters => {
+    return _state.allConversations.filter(conversation => {
+      const isBotAssigned = conversation.meta?.assignee_type === 'AgentBot';
+      const shouldFilter = applyPageFilters(conversation, activeFilters);
+      return isBotAssigned && shouldFilter;
+    });
+  },
+  getCollaboratorsChats: (_state, _, __, rootGetters) => activeFilters => {
+    const currentUserId = rootGetters.getCurrentUser?.id;
+
+    return _state.allConversations.filter(conversation => {
+      const { assignee } = conversation.meta;
+      const isAssignedToOtherAgent =
+        conversation.meta?.assignee_type === 'User' &&
+        assignee &&
+        assignee.id !== currentUserId;
+      const shouldFilter = applyPageFilters(conversation, activeFilters);
+      return isAssignedToOtherAgent && shouldFilter;
+    });
+  },
   getAllStatusChats: (_state, _, __, rootGetters) => activeFilters => {
     const currentUser = rootGetters.getCurrentUser;
     const currentUserId = rootGetters.getCurrentUser.id;

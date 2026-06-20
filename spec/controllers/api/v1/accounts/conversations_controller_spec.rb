@@ -172,48 +172,6 @@ RSpec.describe 'Conversations API', type: :request do
     end
   end
 
-  describe 'GET /api/v1/accounts/{account.id}/conversations/assignee_summary' do
-    context 'when it is an unauthenticated user' do
-      it 'returns unauthorized' do
-        get "/api/v1/accounts/#{account.id}/conversations/assignee_summary"
-
-        expect(response).to have_http_status(:unauthorized)
-      end
-    end
-
-    context 'when it is an authenticated admin' do
-      let(:admin) { create(:user, account: account, role: :administrator) }
-      let(:agent) { create(:user, account: account, role: :agent) }
-      let(:inbox) { create(:inbox, account: account) }
-
-      it 'returns count of non-resolved assigned conversations grouped by assignee' do
-        create(:conversation, account: account, inbox: inbox, assignee: agent, status: :open)
-        create(:conversation, account: account, inbox: inbox, assignee: agent, status: :pending)
-        create(:conversation, account: account, inbox: inbox, assignee: agent, status: :resolved)
-        create(:conversation, account: account, inbox: inbox, assignee: nil, status: :open)
-
-        get "/api/v1/accounts/#{account.id}/conversations/assignee_summary",
-            headers: admin.create_new_auth_token,
-            as: :json
-
-        expect(response).to have_http_status(:success)
-        expect(response.parsed_body).to eq(agent.id.to_s => 2)
-      end
-    end
-
-    context 'when it is an authenticated agent' do
-      let(:agent) { create(:user, account: account, role: :agent) }
-
-      it 'returns unauthorized' do
-        get "/api/v1/accounts/#{account.id}/conversations/assignee_summary",
-            headers: agent.create_new_auth_token,
-            as: :json
-
-        expect(response).to have_http_status(:unauthorized)
-      end
-    end
-  end
-
   describe 'GET /api/v1/accounts/{account.id}/conversations/search' do
     context 'when it is an unauthenticated user' do
       it 'returns unauthorized' do

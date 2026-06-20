@@ -28,8 +28,10 @@ export const conversationUrl = ({
     url = `accounts/${accountId}/participating/conversations/${id}`;
   } else if (conversationType === 'unattended') {
     url = `accounts/${accountId}/unattended/conversations/${id}`;
-  } else if (conversationStatus === 'pending') {
-    url = `accounts/${accountId}/pending/conversations/${id}`;
+  } else if (conversationStatus === 'not_resolved') {
+    url = `accounts/${accountId}/current/conversations/${id}`;
+  } else if (conversationStatus === 'resolved') {
+    url = `accounts/${accountId}/resolved/conversations/${id}`;
   }
   return url;
 };
@@ -59,8 +61,10 @@ export const conversationListPageURL = ({
       unattended: 'unattended/conversations',
     };
     url = `accounts/${accountId}/${urlMap[conversationType]}`;
-  } else if (conversationStatus === 'pending') {
-    url = `accounts/${accountId}/pending/conversations`;
+  } else if (conversationStatus === 'not_resolved') {
+    url = `accounts/${accountId}/current/conversations`;
+  } else if (conversationStatus === 'resolved') {
+    url = `accounts/${accountId}/resolved/conversations`;
   }
   return frontendURL(url);
 };

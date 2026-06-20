@@ -57,7 +57,6 @@ const backButtonUrl = computed(() => {
     label,
     teamId,
     conversationType: conversationTypeMap[name],
-    conversationStatus: name === 'conversation_through_pending' ? 'pending' : '',
     customViewId,
   });
 });
@@ -154,9 +153,13 @@ const copyConversationId = async () => {
           >
             {{ `#${chat.id}` }}
           </button>
-          <span v-if="hasMultipleInboxes">•</span>
+          <span v-if="hasMultipleInboxes">
+            {{ t('CONVERSATION.HEADER.SEPARATOR') }}
+          </span>
           <InboxName v-if="hasMultipleInboxes" :inbox="inbox" class="!mx-0" />
-          <span v-if="isSnoozed">•</span>
+          <span v-if="isSnoozed">
+            {{ t('CONVERSATION.HEADER.SEPARATOR') }}
+          </span>
           <span v-if="isSnoozed" class="font-medium text-n-amber-10">
             {{ snoozedDisplayText }}
           </span>
