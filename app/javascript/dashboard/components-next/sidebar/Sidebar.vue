@@ -333,7 +333,7 @@ const menuItems = computed(() => {
       children: [
         {
           name: 'Current',
-          label: t('SIDEBAR.ALL_CONVERSATIONS'),
+          label: t('SIDEBAR.CURRENT_CONVERSATIONS'),
           icon: 'i-lucide-circle-dot',
           badgeCount: allUnreadCount.value,
           activeOn: ['conversation_through_current'],

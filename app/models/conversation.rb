@@ -122,6 +122,7 @@ class Conversation < ApplicationRecord
 
   before_save :ensure_snooze_until_reset
   before_create :determine_conversation_status
+  before_create :assign_inbox_agent_bot
   before_create :ensure_waiting_since
 
   after_update_commit :execute_after_update_commit_callbacks
@@ -168,7 +169,7 @@ class Conversation < ApplicationRecord
 
   def bot_handoff!
     update(waiting_since: Time.current) if waiting_since.blank?
-    open!
+    update!(status: :open, assignee_agent_bot_id: nil)
     dispatcher_dispatch(CONVERSATION_BOT_HANDOFF)
   end
 
@@ -287,6 +288,16 @@ class Conversation < ApplicationRecord
 
     # TODO: make this an inbox config instead of assuming bot conversations should start as pending
     self.status = :pending if inbox.active_bot?
+  end
+
+  # When an inbox has an active webhook AgentBot, mark the bot as the assignee so the
+  # conversation surfaces under the AI tab. Dialogflow/Captain have no AgentBot record,
+  # so they are intentionally skipped here.
+  def assign_inbox_agent_bot
+    return if assignee_id.present?
+    return unless inbox.agent_bot_inbox&.active?
+
+    self.assignee_agent_bot = inbox.agent_bot
   end
 
   def handle_campaign_status

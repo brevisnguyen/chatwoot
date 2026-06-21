@@ -45,15 +45,15 @@ const intersectionObserverOptions = computed(() => ({
   rootMargin: '100px 0px 100px 0px',
 }));
 
-const collapsedGroups = ref([]);
+const expandedGroups = ref([]);
 
-const isGroupCollapsed = id => collapsedGroups.value.includes(id);
+const isGroupCollapsed = id => !expandedGroups.value.includes(id);
 
 const toggleGroup = id => {
-  if (isGroupCollapsed(id)) {
-    collapsedGroups.value = collapsedGroups.value.filter(item => item !== id);
+  if (expandedGroups.value.includes(id)) {
+    expandedGroups.value = expandedGroups.value.filter(item => item !== id);
   } else {
-    collapsedGroups.value = [...collapsedGroups.value, id];
+    expandedGroups.value = [...expandedGroups.value, id];
   }
 };
 
