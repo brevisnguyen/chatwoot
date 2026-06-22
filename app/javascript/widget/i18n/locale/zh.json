@@ -97,8 +97,12 @@
   },
   "FILE_SIZE_LIMIT": "文件超过大小 {MAXIMUM_FILE_UPLOAD_SIZE} 附件限制",
   "CHAT_FORM": {
+    "UPLOAD_IMAGE": "选择图片",
     "INVALID": {
-      "FIELD": "无效字段"
+      "FIELD": "无效字段",
+      "IMAGE_TYPE": "请选择图片文件",
+      "IMAGE_REQUIRED": "图片为必填项",
+      "UPLOAD_FAILED": "图片上传失败，请重试"
     }
   },
   "EMOJI": {

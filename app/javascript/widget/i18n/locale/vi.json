@@ -97,8 +97,12 @@
   },
   "FILE_SIZE_LIMIT": "Tệp vượt quá kích thước giới hạn {MAXIMUM_FILE_UPLOAD_SIZE}",
   "CHAT_FORM": {
+    "UPLOAD_IMAGE": "Chọn ảnh",
     "INVALID": {
-      "FIELD": "Trường không hợp lệ"
+      "FIELD": "Trường không hợp lệ",
+      "IMAGE_TYPE": "Vui lòng chọn tệp hình ảnh",
+      "IMAGE_REQUIRED": "Hình ảnh là bắt buộc",
+      "UPLOAD_FAILED": "Tải lên hình ảnh thất bại, vui lòng thử lại"
     }
   },
   "EMOJI": {
