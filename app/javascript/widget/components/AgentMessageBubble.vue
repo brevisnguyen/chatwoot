@@ -1,6 +1,7 @@
 <script>
 import { useMessageFormatter } from 'shared/composables/useMessageFormatter';
 import ChatCard from 'shared/components/ChatCard.vue';
+import ChatCardForm from 'shared/components/ChatCardForm.vue';
 import ChatForm from 'shared/components/ChatForm.vue';
 import ChatOptions from 'shared/components/ChatOptions.vue';
 import ChatArticle from './template/Article.vue';
@@ -13,6 +14,7 @@ export default {
   components: {
     ChatArticle,
     ChatCard,
+    ChatCardForm,
     ChatForm,
     ChatOptions,
     EmailInput,
@@ -55,6 +57,15 @@ export default {
     isForm() {
       return this.contentType === 'form';
     },
+    isCardForm() {
+      if (!this.isForm) return false;
+      const {
+        media_url: mediaUrl,
+        title,
+        description,
+      } = this.messageContentAttributes || {};
+      return !!(mediaUrl || title || description);
+    },
     isArticle() {
       return this.contentType === 'article';
     },
@@ -68,12 +79,6 @@ export default {
   methods: {
     onResponse(messageResponse) {
       this.$store.dispatch('message/update', messageResponse);
-    },
-    onOptionSelect(selectedOption) {
-      this.onResponse({
-        submittedValues: [selectedOption],
-        messageId: this.messageId,
-      });
     },
     onFormSubmit(formValues) {
       const formValuesAsArray = Object.keys(formValues).map(key => ({
@@ -117,12 +122,21 @@ export default {
       <ChatOptions
         :title="message"
         :options="messageContentAttributes.items"
-        :hide-fields="!!messageContentAttributes.submitted_values"
-        @option-select="onOptionSelect"
+        hide-fields
       />
     </div>
+    <ChatCardForm
+      v-if="isCardForm && !messageContentAttributes.submitted_values"
+      :media-url="messageContentAttributes.media_url"
+      :title="messageContentAttributes.title"
+      :description="messageContentAttributes.description"
+      :items="messageContentAttributes.items"
+      :button-label="messageContentAttributes.button_label"
+      :submitted-values="messageContentAttributes.submitted_values"
+      @submit="onFormSubmit"
+    />
     <ChatForm
-      v-if="isForm && !messageContentAttributes.submitted_values"
+      v-else-if="isForm && !messageContentAttributes.submitted_values"
       :items="messageContentAttributes.items"
       :button-label="messageContentAttributes.button_label"
       :submitted-values="messageContentAttributes.submitted_values"

@@ -3,6 +3,7 @@ import { mapActions, mapGetters } from 'vuex';
 import { getContrastingTextColor } from '@chatwoot/utils';
 import CustomButton from 'shared/components/Button.vue';
 import FooterReplyTo from 'widget/components/FooterReplyTo.vue';
+import FooterChatOptions from 'widget/components/FooterChatOptions.vue';
 import ChatInputWrap from 'widget/components/ChatInputWrap.vue';
 import { BUS_EVENTS } from 'shared/constants/busEvents';
 import { sendEmailTranscript } from 'widget/api/conversation';
@@ -16,6 +17,7 @@ export default {
     ChatInputWrap,
     CustomButton,
     FooterReplyTo,
+    FooterChatOptions,
   },
   setup() {
     const router = useRouter();
@@ -33,6 +35,7 @@ export default {
       conversationSize: 'conversation/getConversationSize',
       currentUser: 'contacts/getCurrentUser',
       isWidgetStyleFlat: 'appConfig/isWidgetStyleFlat',
+      pendingInputSelectMessage: 'conversation/getPendingInputSelectMessage',
     }),
     textColor() {
       return getContrastingTextColor(this.widgetColor);
@@ -123,6 +126,11 @@ export default {
       v-if="hasReplyTo"
       :in-reply-to="inReplyTo"
       @dismiss="inReplyTo = null"
+    />
+    <FooterChatOptions
+      v-if="pendingInputSelectMessage"
+      :options="pendingInputSelectMessage.content_attributes.items"
+      :message-id="pendingInputSelectMessage.id"
     />
     <ChatInputWrap
       class="shadow-sm"

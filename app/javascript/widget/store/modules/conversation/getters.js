@@ -23,6 +23,24 @@ export const getters = {
     }
     return {};
   },
+  getPendingInputSelectMessage: _state => {
+    const messages = Object.values(_state.conversations);
+    if (!messages.length) return null;
+
+    const lastMessage = messages[messages.length - 1];
+    const { content_type: contentType, content_attributes: attrs = {} } =
+      lastMessage;
+    const hasOptions = Array.isArray(attrs.items) && attrs.items.length;
+
+    if (
+      contentType === 'input_select' &&
+      hasOptions &&
+      !attrs.submitted_values
+    ) {
+      return lastMessage;
+    }
+    return null;
+  },
   getGroupedConversation: _state => {
     const conversationGroupedByDate = groupBy(
       Object.values(_state.conversations),
