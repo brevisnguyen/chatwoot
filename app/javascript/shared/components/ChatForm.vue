@@ -24,6 +24,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    embedded: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ['submit'],
   data() {
@@ -179,7 +183,11 @@ export default {
 
 <template>
   <div
-    class="form chat-bubble agent w-full p-4 bg-n-background dark:bg-n-solid-3"
+    class="form"
+    :class="{
+      'chat-bubble agent w-full p-4 bg-n-background dark:bg-n-solid-3':
+        !embedded,
+    }"
   >
     <form @submit.prevent="onSubmit">
       <div

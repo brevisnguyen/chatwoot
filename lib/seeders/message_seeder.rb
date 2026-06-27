@@ -105,6 +105,22 @@ module Seeders::MessageSeeder
     }
   end
 
+  def self.create_sample_card_form_message(conversation)
+    Message.create!(
+      account: conversation.account,
+      inbox: conversation.inbox,
+      conversation: conversation,
+      message_type: :template,
+      content_type: 'form',
+      content: 'card form',
+      content_attributes: sample_form.merge(
+        media_url: 'https://i.imgur.com/d8Djr4k.jpg',
+        title: 'Acme Shoes 2.0',
+        description: "Move with Acme Shoe 2.0.\nFill the form to get notified."
+      )
+    )
+  end
+
   def self.create_sample_articles_message(conversation)
     Message.create!(
       account: conversation.account,

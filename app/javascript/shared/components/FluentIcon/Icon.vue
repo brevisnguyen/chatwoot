@@ -31,10 +31,8 @@ export default {
     pathSource() {
       // To support icons with multiple paths
       const path = this.icons[`${this.icon}-${this.type}`];
-      if (path.constructor === Array) {
-        return path;
-      }
-      return [path];
+      if (!path) return [];
+      return Array.isArray(path) ? path : [path];
     },
   },
 };
@@ -42,7 +40,7 @@ export default {
 
 <template>
   <svg
-    v-if="iconLib === 'fluent'"
+    v-if="iconLib === 'fluent' && pathSource.length"
     :width="size"
     :height="size"
     fill="none"
@@ -57,7 +55,7 @@ export default {
     />
   </svg>
   <svg
-    v-else
+    v-else-if="pathSource.length"
     :width="size"
     :height="size"
     fill="none"

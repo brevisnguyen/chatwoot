@@ -5,10 +5,28 @@ import { useI18n } from 'vue-i18n';
 import { CONTENT_TYPES } from '../constants.js';
 import { useMessageContext } from '../provider.js';
 import { useInbox } from 'dashboard/composables/useInbox';
+import MessageFormatter from 'shared/helpers/MessageFormatter.js';
 
 const { content, contentAttributes, contentType } = useMessageContext();
 const { t } = useI18n();
 const { isAWebWidgetInbox } = useInbox();
+
+const cardHeader = computed(() => {
+  const { mediaUrl, title, description } = contentAttributes.value || {};
+  if (!mediaUrl && !title && !description) return null;
+
+  const normalizedDescription = (description || '').replace(
+    /<br\s*\/?>/gi,
+    '\n'
+  );
+  return {
+    mediaUrl,
+    title,
+    description: description
+      ? new MessageFormatter(normalizedDescription).formattedMessage
+      : '',
+  };
+});
 
 const formValues = computed(() => {
   if (contentType.value === CONTENT_TYPES.FORM) {
@@ -51,6 +69,22 @@ const formValues = computed(() => {
 
 <template>
   <BaseBubble class="px-4 py-3" data-bubble-name="csat">
+    <div v-if="cardHeader" class="mb-2">
+      <img
+        v-if="cardHeader.mediaUrl"
+        :src="cardHeader.mediaUrl"
+        alt=""
+        class="w-full object-contain max-h-[150px] rounded-lg mb-2"
+      />
+      <h4 v-if="cardHeader.title" class="text-base font-medium text-n-slate-12">
+        {{ cardHeader.title }}
+      </h4>
+      <div
+        v-if="cardHeader.description"
+        v-dompurify-html="cardHeader.description"
+        class="text-sm text-n-slate-11"
+      />
+    </div>
     <span v-dompurify-html="content" :title="content" />
     <dl v-if="formValues.length" class="mt-4">
       <template v-for="item in formValues" :key="item.title">
