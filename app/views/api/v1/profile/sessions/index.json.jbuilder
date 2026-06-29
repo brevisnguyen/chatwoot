@@ -6,6 +6,7 @@ json.array! @sessions do |session|
   json.platform_name session.platform_name
   json.platform_version session.platform_version
   json.ip_address session.ip_address
+  json.state session.state
   json.city session.city
   json.country session.country
   json.country_code session.country_code

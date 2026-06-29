@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_06_20_000000) do
+ActiveRecord::Schema[7.1].define(version: 2026_06_29_120000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1264,8 +1264,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_20_000000) do
     t.text "description"
     t.boolean "allow_auto_assign", default: true
     t.bigint "account_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "icon", default: ""
     t.string "icon_color", default: ""
     t.index ["account_id"], name: "index_teams_on_account_id"
@@ -1288,6 +1288,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_20_000000) do
     t.datetime "last_activity_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "state"
     t.index ["user_id", "client_id"], name: "index_user_sessions_on_user_id_and_client_id", unique: true
     t.index ["user_id"], name: "index_user_sessions_on_user_id"
   end

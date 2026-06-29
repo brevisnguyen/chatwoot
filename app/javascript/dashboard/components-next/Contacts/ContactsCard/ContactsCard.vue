@@ -10,6 +10,7 @@ import Flag from 'dashboard/components-next/flag/Flag.vue';
 import ContactDeleteSection from 'dashboard/components-next/Contacts/ContactsCard/ContactDeleteSection.vue';
 import Checkbox from 'dashboard/components-next/checkbox/Checkbox.vue';
 import countries from 'shared/constants/countries';
+import { formatIpLocation } from 'dashboard/composables/useIpLocation';
 
 const props = defineProps({
   id: { type: Number, required: true },
@@ -58,30 +59,23 @@ const countriesMap = computed(() => {
   }, {});
 });
 
-const countryDetails = computed(() => {
+const locationDetails = computed(() => {
   const attributes = props.additionalAttributes || {};
-  const { country, countryCode, city } = attributes;
+  const formatted = formatIpLocation(attributes);
 
-  if (!country && !countryCode) return null;
+  if (!formatted.hasLocation && !formatted.countryCode) return null;
 
-  const activeCountry =
-    countriesMap.value[country] || countriesMap.value[countryCode];
+  const countryCode =
+    formatted.countryCode ||
+    countriesMap.value[attributes.country]?.id ||
+    countriesMap.value[attributes.countryCode]?.id;
 
-  if (!activeCountry) return null;
+  if (!countryCode) return null;
 
   return {
-    countryCode: activeCountry.id,
-    city: city ? `${city},` : null,
-    name: activeCountry.name,
+    countryCode,
+    locationText: formatted.locationText,
   };
-});
-
-const formattedLocation = computed(() => {
-  if (!countryDetails.value) return '';
-
-  return [countryDetails.value.city, countryDetails.value.name]
-    .filter(Boolean)
-    .join(' ');
 });
 
 const handleFormUpdate = updatedData => {
@@ -176,13 +170,16 @@ const handleAvatarHover = isHovered => {
             </span>
             <div v-if="phoneNumber" class="w-px h-3 truncate bg-n-slate-6" />
             <span
-              v-if="countryDetails"
+              v-if="locationDetails"
               class="inline-flex items-center gap-2 text-sm truncate text-n-slate-11"
             >
-              <Flag :country="countryDetails.countryCode" class="size-3.5" />
-              {{ formattedLocation }}
+              <Flag :country="locationDetails.countryCode" class="size-3.5" />
+              {{ locationDetails.locationText }}
             </span>
-            <div v-if="countryDetails" class="w-px h-3 truncate bg-n-slate-6" />
+            <div
+              v-if="locationDetails"
+              class="w-px h-3 truncate bg-n-slate-6"
+            />
             <Button
               :label="t('CONTACTS_LAYOUT.CARD.VIEW_DETAILS')"
               variant="link"

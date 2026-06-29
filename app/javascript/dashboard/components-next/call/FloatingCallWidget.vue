@@ -10,7 +10,7 @@ import { VOICE_CALL_PROVIDERS } from 'dashboard/helper/inbox';
 import { VOICE_CALL_DIRECTION } from 'dashboard/components-next/message/constants';
 import WindowVisibilityHelper from 'dashboard/helper/AudioAlerts/WindowVisibilityHelper';
 import CallCard from 'dashboard/components-next/call/CallCard.vue';
-import countriesList from 'shared/constants/countries.js';
+import { formatIpLocation } from 'dashboard/composables/useIpLocation';
 
 const RINGTONE_URL = '/audio/dashboard/ringtone.mp3';
 
@@ -103,18 +103,8 @@ const getCallInfo = call => {
   const caller = call?.caller;
   const additional =
     sender?.additional_attributes || caller?.additionalAttributes || {};
-  const city = additional.city || '';
-  const countryCode = additional.country_code || '';
-  const country =
-    additional.country ||
-    countriesList.find(c => c.id === countryCode.toUpperCase())?.name ||
-    '';
-  // Prefer the richest available location string ("City, Country"); fall back to
-  // whichever single field is present; finally fall back to the inbox name so
-  // there's always something to show.
-  const locationParts = [city, country].filter(Boolean);
-  const location =
-    locationParts.join(', ') || inbox?.name || 'Customer support';
+  const { locationText, countryCode } = formatIpLocation(additional);
+  const location = locationText || inbox?.name || 'Customer support';
   return {
     conversation,
     inbox,
@@ -128,7 +118,7 @@ const getCallInfo = call => {
     inboxName: inbox?.name || 'Customer support',
     location,
     countryFlag: countryCodeToFlag(countryCode),
-    hasLocation: locationParts.length > 0,
+    hasLocation: Boolean(locationText),
     avatar: caller?.avatar || sender?.avatar || sender?.thumbnail,
   };
 };

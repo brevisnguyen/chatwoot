@@ -8,6 +8,7 @@ import AnalyticsHelper from 'dashboard/helper/AnalyticsHelper';
 import { SESSION_EVENTS } from 'dashboard/helper/AnalyticsHelper/events';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
 import Button from 'dashboard/components-next/button/Button.vue';
+import { formatIpLocation } from 'dashboard/composables/useIpLocation';
 
 const { t } = useI18n();
 const sessions = ref([]);
@@ -51,12 +52,7 @@ const sessionLabel = session => {
   );
 };
 
-const locationLabel = session => {
-  const parts = [];
-  if (session.city) parts.push(session.city);
-  if (session.country) parts.push(session.country);
-  return parts.join(', ');
-};
+const locationLabel = session => formatIpLocation(session).locationText;
 
 const fetchSessions = async () => {
   loading.value = true;

@@ -7,6 +7,7 @@ import {
 } from 'shared/helpers/CustomErrors';
 import { dynamicTime } from 'shared/helpers/timeHelper';
 import { useAdmin } from 'dashboard/composables/useAdmin';
+import { formatIpLocation } from 'dashboard/composables/useIpLocation';
 import ContactInfoRow from './ContactInfoRow.vue';
 import Avatar from 'next/avatar/Avatar.vue';
 import SocialIcons from './SocialIcons.vue';
@@ -67,17 +68,14 @@ export default {
       return this.contact.additional_attributes || {};
     },
     location() {
-      const {
-        country = '',
-        city = '',
-        country_code: countryCode,
-      } = this.additionalAttributes;
-      const cityAndCountry = [city, country].filter(item => !!item).join(', ');
+      const { locationText, countryCode } = formatIpLocation(
+        this.additionalAttributes
+      );
 
-      if (!cityAndCountry) {
+      if (!locationText) {
         return '';
       }
-      return this.findCountryFlag(countryCode, cityAndCountry);
+      return this.findCountryFlag(countryCode, locationText);
     },
     socialProfiles() {
       const {

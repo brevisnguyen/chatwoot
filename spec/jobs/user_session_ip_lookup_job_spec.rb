@@ -3,7 +3,14 @@ require 'rails_helper'
 RSpec.describe UserSessionIpLookupJob do
   let(:user) { create(:user) }
   let(:session) { user.user_sessions.create!(client_id: 'c', ip_address: '8.8.8.8', last_activity_at: Time.current) }
-  let(:geo_result) { OpenStruct.new(city: 'Mountain View', country: 'United States', country_code: 'US') }
+  let(:geo_result) do
+    IpLookup::Result.new(
+      city: 'Mountain View',
+      state: 'California',
+      country: 'United States',
+      country_code: 'US'
+    )
+  end
   let(:ip_lookup) { instance_double(IpLookupService) }
 
   before { allow(IpLookupService).to receive(:new).and_return(ip_lookup) }
@@ -14,6 +21,7 @@ RSpec.describe UserSessionIpLookupJob do
     described_class.perform_now(session)
 
     session.reload
+    expect(session.state).to eq('California')
     expect(session.city).to eq('Mountain View')
     expect(session.country).to eq('United States')
     expect(session.country_code).to eq('US')

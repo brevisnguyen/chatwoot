@@ -8,6 +8,7 @@ class UserSessionIpLookupJob < ApplicationJob
     return unless result
 
     session.update_columns( # rubocop:disable Rails/SkipsModelValidations
+      state: result.state,
       city: result.city,
       country: result.country,
       country_code: result.country_code

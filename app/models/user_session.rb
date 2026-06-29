@@ -13,6 +13,7 @@
 #  last_activity_at :datetime
 #  platform_name    :string
 #  platform_version :string
+#  state            :string
 #  user_agent       :string
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null

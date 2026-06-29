@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { frontendURL } from 'dashboard/helper/URLHelper';
 import countries from 'shared/constants/countries';
+import { formatIpLocation } from 'dashboard/composables/useIpLocation';
 import { dynamicTime } from 'shared/helpers/timeHelper';
 
 import CardLayout from 'dashboard/components-next/CardLayout.vue';
@@ -59,29 +60,22 @@ const updatedAtTime = computed(() => {
   return dynamicTime(props.updatedAt);
 });
 
-const countryDetails = computed(() => {
-  const { country, countryCode, city } = props.additionalAttributes;
+const locationDetails = computed(() => {
+  const formatted = formatIpLocation(props.additionalAttributes);
 
-  if (!country && !countryCode) return null;
+  if (!formatted.hasLocation && !formatted.countryCode) return null;
 
-  const activeCountry =
-    countriesMap.value[country] || countriesMap.value[countryCode];
+  const countryCode =
+    formatted.countryCode ||
+    countriesMap.value[props.additionalAttributes.country]?.id ||
+    countriesMap.value[props.additionalAttributes.countryCode]?.id;
 
-  if (!activeCountry) return null;
+  if (!countryCode) return null;
 
   return {
-    countryCode: activeCountry.id,
-    city: city ? `${city},` : null,
-    name: activeCountry.name,
+    countryCode,
+    locationText: formatted.locationText,
   };
-});
-
-const formattedLocation = computed(() => {
-  if (!countryDetails.value) return '';
-
-  return [countryDetails.value.city, countryDetails.value.name]
-    .filter(Boolean)
-    .join(' ');
 });
 </script>
 
@@ -132,19 +126,21 @@ const formattedLocation = computed(() => {
           </span>
 
           <div
-            v-if="(email || phone) && countryDetails"
+            v-if="(email || phone) && locationDetails"
             class="w-px h-3 bg-n-slate-6 rounded"
           />
 
           <span
-            v-if="countryDetails"
+            v-if="locationDetails"
             class="truncate text-n-slate-11 flex items-center gap-1 min-w-0"
           >
             <Flag
-              :country="countryDetails.countryCode"
+              :country="locationDetails.countryCode"
               class="size-3 shrink-0"
             />
-            <span class="truncate min-w-0">{{ formattedLocation }}</span>
+            <span class="truncate min-w-0">{{
+              locationDetails.locationText
+            }}</span>
           </span>
         </div>
       </div>
