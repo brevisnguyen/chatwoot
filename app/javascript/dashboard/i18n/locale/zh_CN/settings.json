@@ -69,7 +69,7 @@
         "IMAGE_UPLOAD_ERROR": "无法上传图片！请再试一次",
         "IMAGE_UPLOAD_SUCCESS": "图片添加成功。请点击保存签名。",
         "IMAGE_UPLOAD_SIZE_ERROR": "图片大小应该小于{size}MB",
-        "INLINE_IMAGE_WARNING": "Pasted inline images were removed. Please use the image upload button to add images to your signature."
+        "INLINE_IMAGE_WARNING": "粘贴的内联图片已被删除。请使用图片上传按钮添加图片到您的签名。"
       },
       "MESSAGE_SIGNATURE": {
         "LABEL": "消息签名",
@@ -83,8 +83,19 @@
       },
       "SECURITY_SECTION": {
         "TITLE": "安全",
-        "NOTE": "Manage additional security features for your account.",
-        "MFA_BUTTON": "Manage Two-Factor Authentication"
+        "NOTE": "管理您账户的其他安全功能。",
+        "MFA_BUTTON": "管理两步验证"
+      },
+      "SESSIONS_SECTION": {
+        "TITLE": "活跃登录会话",
+        "NOTE": "这些是当前已登录您账户的设备。",
+        "CURRENT": "当前登录会话",
+        "REVOKE": "撤销",
+        "REVOKE_SUCCESS": "登录会话已成功撤销",
+        "REVOKE_ERROR": "无法撤销登录会话，请重试。",
+        "FETCH_ERROR": "无法获取登录会话列表，请重试。",
+        "LAST_ACTIVE": "最后活跃",
+        "UNKNOWN_DEVICE": "未知设备"
       },
       "ACCESS_TOKEN": {
         "TITLE": "访问令牌",
@@ -255,9 +266,9 @@
       "MESSAGE": "您的账户已被暂停。请联系支持团队以获取更多信息。"
     },
     "NO_ACCOUNTS": {
-      "TITLE": "No account found",
-      "MESSAGE_CLOUD": "You are not part of any accounts right now. If you think this is a mistake, please reach out to our support team.",
-      "MESSAGE_SELF_HOSTED": "You are not part of any accounts right now. Please reach out to your administrator.",
+      "TITLE": "未找到账户",
+      "MESSAGE_CLOUD": "您目前不属于任何账户。如果您认为这是一个错误，请联系我们的支持团队。",
+      "MESSAGE_SELF_HOSTED": "您目前不属于任何账户。请联系您的管理员。",
       "LOGOUT": "注销"
     }
   },
@@ -563,35 +574,35 @@
   "CONVERSATION_WORKFLOW": {
     "INDEX": {
       "HEADER": {
-        "TITLE": "Conversation Workflows",
-        "DESCRIPTION": "Configure rules and required fields for conversation resolution."
+        "TITLE": "会话工作流",
+        "DESCRIPTION": "配置规则和所需字段以解决会话。"
       }
     },
     "REQUIRED_ATTRIBUTES": {
-      "TITLE": "Attributes required on resolution",
-      "DESCRIPTION": "When resolving a conversation, agents will be prompted to fill these attributes if they haven't yet.",
-      "NO_ATTRIBUTES": "No attributes added yet",
+      "TITLE": "解决会话所需属性",
+      "DESCRIPTION": "当解决会话时，代理将被提示填写这些属性，如果他们还没有填写。",
+      "NO_ATTRIBUTES": "尚未添加属性",
       "ADD": {
-        "TITLE": "Add Attributes",
+        "TITLE": "添加属性",
         "SEARCH_PLACEHOLDER": "搜索属性"
       },
       "SAVE": {
-        "SUCCESS": "Required attributes updated",
-        "ERROR": "Could not update required attributes, please try again"
+        "SUCCESS": "所需属性已更新",
+        "ERROR": "无法更新所需属性，请再试一次"
       },
       "MODAL": {
         "TITLE": "解决会话",
-        "DESCRIPTION": "Please fill in the following custom attributes before resolving this conversation",
+        "DESCRIPTION": "在解决会话之前，请填写以下自定义属性",
         "ACTIONS": {
           "RESOLVE": "解决会话",
           "CANCEL": "取消"
         },
         "PLACEHOLDERS": {
-          "TEXT": "Write a note...",
-          "NUMBER": "Enter a number",
-          "LINK": "Add a link",
-          "DATE": "Pick a date",
-          "LIST": "Select an option"
+          "TEXT": "写一个笔记...",
+          "NUMBER": "输入一个数字",
+          "LINK": "添加一个链接",
+          "DATE": "选择一个日期",
+          "LIST": "选择一个选项"
         },
         "CHECKBOX": {
           "YES": "是",
@@ -652,91 +663,91 @@
   "ASSIGNMENT_POLICY": {
     "INDEX": {
       "HEADER": {
-        "TITLE": "Agent assignment",
+        "TITLE": "代理分配",
         "DESCRIPTION": "Define policies to effectively manage workload and route conversations based on the needs of inboxes and agents. Learn more here"
       },
       "ASSIGNMENT_POLICY": {
-        "TITLE": "Assignment policy",
-        "DESCRIPTION": "Manage how conversations get assigned in inboxes.",
+        "TITLE": "分配策略",
+        "DESCRIPTION": "管理如何在收件箱中分配会话。",
         "FEATURES": [
-          "Assign by conversations evenly or by available capacity",
-          "Add fair distribution rules to avoid overloading any agent",
-          "Add inboxes to a policy - one policy per inbox"
+          "按会话均匀分配或按可用容量分配",
+          "添加公平分配规则以避免任何代理过载",
+          "添加收件箱到策略 - 每个收件箱一个策略"
         ]
       },
       "AGENT_CAPACITY_POLICY": {
-        "TITLE": "Agent capacity policy",
-        "DESCRIPTION": "Manage workload for agents.",
+        "TITLE": "代理容量策略",
+        "DESCRIPTION": "管理代理的工作负载。",
         "FEATURES": [
-          "Define maximum conversations per inbox",
-          "Create exceptions based on labels and time",
-          "Add agents to a policy - one policy per agent"
+          "定义每个收件箱的最大会话数",
+          "基于标签和时间创建例外",
+          "添加代理到策略 - 每个代理一个策略"
         ]
       }
     },
     "AGENT_ASSIGNMENT_POLICY": {
       "INDEX": {
         "HEADER": {
-          "TITLE": "Assignment policy",
-          "CREATE_POLICY": "New policy"
+          "TITLE": "分配策略",
+          "CREATE_POLICY": "新策略"
         },
         "CARD": {
-          "ORDER": "Order",
+          "ORDER": "顺序",
           "PRIORITY": "优先级",
           "ACTIVE": "状态",
-          "INACTIVE": "Inactive",
-          "POPOVER": "Added inboxes",
+          "INACTIVE": "已禁用",
+          "POPOVER": "添加的收件箱",
           "EDIT": "编辑"
         },
-        "NO_RECORDS_FOUND": "No assignment policies found"
+        "NO_RECORDS_FOUND": "未找到分配策略"
       },
       "CREATE": {
         "HEADER": {
-          "TITLE": "Create assignment policy"
+          "TITLE": "创建分配策略"
         },
-        "CREATE_BUTTON": "Create policy",
+        "CREATE_BUTTON": "创建策略",
         "API": {
-          "SUCCESS_MESSAGE": "Assignment policy created successfully",
-          "ERROR_MESSAGE": "Failed to create assignment policy",
-          "INBOX_LINKED": "Inbox has been linked to the policy"
+          "SUCCESS_MESSAGE": "分配策略创建成功",
+          "ERROR_MESSAGE": "无法创建分配策略，请再试一次",
+          "INBOX_LINKED": "收件箱已链接到策略"
         }
       },
       "EDIT": {
         "HEADER": {
-          "TITLE": "Edit assignment policy"
+          "TITLE": "编辑分配策略"
         },
-        "EDIT_BUTTON": "Update policy",
+        "EDIT_BUTTON": "更新策略",
         "CONFIRM_ADD_INBOX_DIALOG": {
-          "TITLE": "Add inbox",
-          "DESCRIPTION": "{inboxName} inbox is already linked to another policy. Are you sure you want to link it to this policy? It will be unlinked from the other policy.",
-          "CONFIRM_BUTTON_LABEL": "Continue",
+          "TITLE": "添加收件箱",
+          "DESCRIPTION": "{inboxName} 收件箱已链接到另一个策略。您确定要将其链接到此策略吗？它将从此策略中取消链接。",
+          "CONFIRM_BUTTON_LABEL": "继续",
           "CANCEL_BUTTON_LABEL": "取消"
         },
         "INBOX_LINK_PROMPT": {
-          "TITLE": "Link inbox to policy",
-          "DESCRIPTION": "Would you like to link this inbox to the assignment policy?",
-          "LINK_BUTTON": "Link inbox",
-          "CANCEL_BUTTON": "Skip"
+          "TITLE": "链接收件箱到策略",
+          "DESCRIPTION": "您想将此收件箱链接到分配策略吗？",
+          "LINK_BUTTON": "链接收件箱",
+          "CANCEL_BUTTON": "跳过"
         },
         "API": {
-          "SUCCESS_MESSAGE": "Assignment policy updated successfully",
-          "ERROR_MESSAGE": "Failed to update assignment policy"
+          "SUCCESS_MESSAGE": "分配策略更新成功",
+          "ERROR_MESSAGE": "无法更新分配策略，请再试一次"
         },
         "INBOX_API": {
           "ADD": {
-            "SUCCESS_MESSAGE": "Inbox added to policy successfully",
-            "ERROR_MESSAGE": "Failed to add inbox to policy"
+            "SUCCESS_MESSAGE": "收件箱添加到策略成功",
+            "ERROR_MESSAGE": "无法添加收件箱到策略，请再试一次"
           },
           "REMOVE": {
-            "SUCCESS_MESSAGE": "Inbox removed from policy successfully",
-            "ERROR_MESSAGE": "Failed to remove inbox from policy"
+            "SUCCESS_MESSAGE": "收件箱从策略中删除成功",
+            "ERROR_MESSAGE": "无法从策略中删除收件箱，请再试一次"
           }
         }
       },
       "FORM": {
-        "NAME": {
-          "LABEL": "Policy name:",
-          "PLACEHOLDER": "Enter policy name"
+        "NAME": { 
+          "LABEL": "策略名称:",
+          "PLACEHOLDER": "输入策略名称"
         },
         "DESCRIPTION": {
           "LABEL": "描述:",
@@ -745,17 +756,17 @@
         "STATUS": {
           "LABEL": "状态:",
           "PLACEHOLDER": "选择状态",
-          "ACTIVE": "Policy is active",
-          "INACTIVE": "Policy is inactive"
+          "ACTIVE": "策略已启用",
+          "INACTIVE": "策略已禁用"
         },
         "ASSIGNMENT_ORDER": {
-          "LABEL": "Assignment order",
+          "LABEL": "分配顺序",
           "ROUND_ROBIN": {
-            "LABEL": "Round robin",
-            "DESCRIPTION": "Assign conversations evenly among agents."
+            "LABEL": "轮询",
+            "DESCRIPTION": "将会话均匀分配给代理。"
           },
           "BALANCED": {
-            "LABEL": "Balanced",
+            "LABEL": "平衡",
             "DESCRIPTION": "Assign conversations based on available capacity.",
             "PREMIUM_MESSAGE": "Upgrade to access balanced assignment and agent capacity management.",
             "PREMIUM_BADGE": "Premium"

@@ -82,8 +82,8 @@
       },
       "SECURITY_SECTION": {
         "TITLE": "安全",
-        "NOTE": "Manage additional security features for your account.",
-        "MFA_BUTTON": "Manage Two-Factor Authentication"
+        "NOTE": "管理您账户的其他安全功能。",
+        "MFA_BUTTON": "管理两步验证"
       },
       "ACCESS_TOKEN": {
         "TITLE": "访问令牌",
