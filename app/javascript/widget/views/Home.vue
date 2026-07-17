@@ -1,6 +1,6 @@
 <script>
 import TeamAvailability from 'widget/components/TeamAvailability.vue';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import { useRouter } from 'vue-router';
 import configMixin from 'widget/mixins/configMixin';
 import ArticleContainer from '../components/pageComponents/Home/Article/ArticleContainer.vue';
@@ -20,12 +20,20 @@ export default {
       availableAgents: 'agent/availableAgents',
       conversationSize: 'conversation/getConversationSize',
       unreadMessageCount: 'conversation/getUnreadMessageCount',
+      conversationParams: 'conversationAttributes/getConversationParams',
     }),
+    hasConversation() {
+      return !!(this.conversationSize || this.conversationParams?.id);
+    },
   },
   methods: {
-    startConversation() {
-      if (this.preChatFormEnabled && !this.conversationSize) {
+    ...mapActions('conversation', ['createConversation']),
+    async startConversation() {
+      if (this.preChatFormEnabled && !this.hasConversation) {
         return this.router.replace({ name: 'prechat-form' });
+      }
+      if (!this.hasConversation) {
+        await this.createConversation({});
       }
       return this.router.replace({ name: 'messages' });
     },
@@ -37,7 +45,7 @@ export default {
   <div class="z-50 flex flex-col justify-end flex-1 w-full p-4 gap-4">
     <TeamAvailability
       :available-agents="availableAgents"
-      :has-conversation="!!conversationSize"
+      :has-conversation="hasConversation"
       :unread-count="unreadMessageCount"
       @start-conversation="startConversation"
     />

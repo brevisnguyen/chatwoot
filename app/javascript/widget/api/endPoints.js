@@ -1,9 +1,17 @@
 import { buildSearchParamsWithLocale } from '../helpers/urlParamsHelper';
 import { generateEventParams } from './events';
 
-const createConversation = params => {
+const createConversation = (params = {}) => {
   const referrerURL = window.referrerURL || '';
   const search = buildSearchParamsWithLocale(window.location.search);
+  const message = {
+    timestamp: new Date().toString(),
+    referer_url: referrerURL,
+  };
+  if (params.message) {
+    message.content = params.message;
+  }
+
   return {
     url: `/api/v1/widget/conversations${search}`,
     params: {
@@ -12,11 +20,7 @@ const createConversation = params => {
         email: params.emailAddress,
         phone_number: params.phoneNumber,
       },
-      message: {
-        content: params.message,
-        timestamp: new Date().toString(),
-        referer_url: referrerURL,
-      },
+      message,
       custom_attributes: params.customAttributes,
     },
   };

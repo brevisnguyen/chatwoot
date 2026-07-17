@@ -39,7 +39,7 @@ class Api::V1::Widget::BaseController < ApplicationController
         browser_language: browser.accept_language&.first&.code,
         browser: browser_params,
         initiated_at: timestamp_params,
-        referer: permitted_params[:message][:referer_url]
+        referer: message_referer_url
       },
       custom_attributes: permitted_params[:custom_attributes].presence || {}
     }
@@ -70,19 +70,23 @@ class Api::V1::Widget::BaseController < ApplicationController
   end
 
   def timestamp_params
-    { timestamp: permitted_params[:message][:timestamp] }
+    { timestamp: permitted_params.dig(:message, :timestamp).presence || Time.current.to_s }
+  end
+
+  def message_referer_url
+    permitted_params.dig(:message, :referer_url).presence || request.referer
   end
 
   def message_params
     {
       account_id: conversation.account_id,
       sender: @contact,
-      content: permitted_params[:message][:content],
+      content: permitted_params.dig(:message, :content),
       inbox_id: conversation.inbox_id,
       content_attributes: {
-        in_reply_to: permitted_params[:message][:reply_to]
+        in_reply_to: permitted_params.dig(:message, :reply_to)
       },
-      echo_id: permitted_params[:message][:echo_id],
+      echo_id: permitted_params.dig(:message, :echo_id),
       message_type: :incoming
     }
   end

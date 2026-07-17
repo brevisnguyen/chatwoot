@@ -10,7 +10,8 @@ class Api::V1::Widget::ConversationsController < Api::V1::Widget::BaseController
     ActiveRecord::Base.transaction do
       process_update_contact
       @conversation = create_conversation
-      conversation.messages.create!(message_params)
+      MessageTemplates::Template::Greeting.perform_if_applicable(@conversation)
+      conversation.messages.create!(message_params) if message_content_present?
       # TODO: Temporary fix for message type cast issue, since message_type is returning as string instead of integer
       conversation.reload
     end
@@ -92,6 +93,10 @@ class Api::V1::Widget::ConversationsController < Api::V1::Widget::BaseController
 
   def render_not_found_if_empty
     return head :not_found if conversation.nil?
+  end
+
+  def message_content_present?
+    permitted_params.dig(:message, :content).present?
   end
 
   def permitted_params

@@ -162,6 +162,45 @@ RSpec.describe '/api/v1/widget/conversations/toggle_typing', type: :request do
       json_response = response.parsed_body
       expect(json_response['contact']['phone_number']).to be_nil
     end
+
+    it 'creates a conversation with greeting and no customer message' do
+      web_widget.inbox.update!(greeting_enabled: true, greeting_message: 'Welcome to support')
+
+      post '/api/v1/widget/conversations',
+           headers: { 'X-Auth-Token' => token_without_conversation },
+           params: {
+             website_token: web_widget.website_token,
+             message: {
+               timestamp: Time.current.to_s,
+               referer_url: 'https://example.com'
+             }
+           },
+           as: :json
+
+      expect(response).to have_http_status(:success)
+      json_response = response.parsed_body
+      expect(json_response['messages'].length).to eq(1)
+      expect(json_response['messages'][0]['content']).to eq('Welcome to support')
+      expect(json_response['messages'][0]['message_type']).to eq(3)
+      expect(json_response['messages'][0]['content_attributes']['template_type']).to eq('greeting')
+    end
+
+    it 'creates greeting before the customer message when greeting is enabled' do
+      web_widget.inbox.update!(greeting_enabled: true, greeting_message: 'Welcome to support')
+
+      post '/api/v1/widget/conversations',
+           headers: { 'X-Auth-Token' => token_without_conversation },
+           params: conversation_params,
+           as: :json
+
+      expect(response).to have_http_status(:success)
+      json_response = response.parsed_body
+      expect(json_response['messages'].length).to eq(2)
+      expect(json_response['messages'][0]['content']).to eq('Welcome to support')
+      expect(json_response['messages'][0]['message_type']).to eq(3)
+      expect(json_response['messages'][1]['content']).to eq('This is a test message')
+      expect(json_response['messages'][1]['message_type']).to eq(0)
+    end
   end
 
   describe 'POST /api/v1/widget/conversations/toggle_typing' do

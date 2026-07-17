@@ -46,6 +46,7 @@ class Api::V1::Widget::MessagesController < Api::V1::Widget::BaseController
     return unless conversation.nil?
 
     @conversation = create_conversation
+    MessageTemplates::Template::Greeting.perform_if_applicable(@conversation)
     apply_labels if permitted_params[:labels].present?
   end
 

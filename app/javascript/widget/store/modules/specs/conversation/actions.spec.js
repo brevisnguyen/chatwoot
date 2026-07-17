@@ -32,7 +32,7 @@ describe('#actions', () => {
         },
       }));
       await actions.createConversation(
-        { commit },
+        { commit, dispatch },
         { contact: {}, message: 'This is a test message' }
       );
       expect(commit.mock.calls).toEqual([
@@ -40,6 +40,67 @@ describe('#actions', () => {
         [
           'pushMessageToConversation',
           { id: 1, content: 'This is a test message' },
+        ],
+        [
+          'conversationAttributes/SET_CONVERSATION_ATTRIBUTES',
+          {
+            contact: { name: 'contact-name' },
+            messages: [{ id: 1, content: 'This is a test message' }],
+          },
+          { root: true },
+        ],
+        ['setConversationUIFlag', { isCreating: false }],
+      ]);
+      expect(dispatch).toHaveBeenCalledWith(
+        'conversationAttributes/getAttributes',
+        {},
+        { root: true }
+      );
+      windowSpy.mockRestore();
+    });
+
+    it('pushes all messages from the response', async () => {
+      API.post.mockResolvedValue({
+        data: {
+          contact: { name: 'contact-name' },
+          messages: [
+            { id: 1, content: 'Welcome greeting' },
+            { id: 2, content: 'Customer message' },
+          ],
+        },
+      });
+
+      let windowSpy = vi.spyOn(window, 'window', 'get');
+      windowSpy.mockImplementation(() => ({
+        WOOT_WIDGET: {
+          $root: {
+            $i18n: {
+              locale: 'el',
+            },
+          },
+        },
+        location: {
+          search: '?param=1',
+        },
+      }));
+      await actions.createConversation(
+        { commit, dispatch },
+        { contact: {}, message: 'Customer message' }
+      );
+      expect(commit.mock.calls).toEqual([
+        ['setConversationUIFlag', { isCreating: true }],
+        ['pushMessageToConversation', { id: 1, content: 'Welcome greeting' }],
+        ['pushMessageToConversation', { id: 2, content: 'Customer message' }],
+        [
+          'conversationAttributes/SET_CONVERSATION_ATTRIBUTES',
+          {
+            contact: { name: 'contact-name' },
+            messages: [
+              { id: 1, content: 'Welcome greeting' },
+              { id: 2, content: 'Customer message' },
+            ],
+          },
+          { root: true },
         ],
         ['setConversationUIFlag', { isCreating: false }],
       ]);

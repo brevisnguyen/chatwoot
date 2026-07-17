@@ -148,6 +148,14 @@ RSpec.describe MessageTemplates::HookExecutionService do
         end.not_to(change { conversation.reload.messages.template.count })
       end
 
+      it 'does not send greeting via perform_if_applicable when Captain is handling' do
+        inbox.update!(greeting_enabled: true, greeting_message: 'Hello! How can we help you?', enable_email_collect: false)
+
+        expect do
+          MessageTemplates::Template::Greeting.perform_if_applicable(conversation)
+        end.not_to(change { conversation.reload.messages.template.count })
+      end
+
       it 'does not create out of office message in conversation' do
         inbox.update!(
           working_hours_enabled: true,
