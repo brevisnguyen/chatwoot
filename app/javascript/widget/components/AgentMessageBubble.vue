@@ -75,6 +75,9 @@ export default {
     isIntegrations() {
       return this.contentType === 'integrations';
     },
+    isGreeting() {
+      return this.messageContentAttributes?.template_type === 'greeting';
+    },
   },
   methods: {
     onResponse(messageResponse) {
@@ -105,6 +108,7 @@ export default {
       <div
         v-dompurify-html="formatMessage(message, false)"
         class="message-content text-n-slate-12"
+        :class="{ 'text-center': isGreeting }"
       />
       <EmailInput
         v-if="isTemplateEmail"

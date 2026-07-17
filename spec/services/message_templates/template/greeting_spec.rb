@@ -29,5 +29,41 @@ describe MessageTemplates::Template::Greeting do
       expect(conversation.messages.count).to eq(1)
       expect(conversation.messages.last.content).to eq('Hello welcome to our board.')
     end
+
+    it 'marks greeting messages with template_type' do
+      conversation.inbox.update!(greeting_message: 'Hello welcome to our board.')
+      described_class.new(conversation: conversation).perform
+      expect(conversation.messages.last.content_attributes['template_type']).to eq('greeting')
+    end
+  end
+
+  describe '.perform_if_applicable' do
+    let(:conversation) { create(:conversation) }
+
+    it 'creates a greeting when enabled and message is present' do
+      conversation.inbox.update!(greeting_enabled: true, greeting_message: 'Hello welcome to our board.')
+
+      expect do
+        described_class.perform_if_applicable(conversation)
+      end.to change { conversation.messages.template.count }.by(1)
+      expect(conversation.messages.template.last.content_attributes['template_type']).to eq('greeting')
+    end
+
+    it 'does not create a greeting when greeting is disabled' do
+      conversation.inbox.update!(greeting_enabled: false, greeting_message: 'Hello welcome to our board.')
+
+      expect do
+        described_class.perform_if_applicable(conversation)
+      end.not_to(change { conversation.messages.template.count })
+    end
+
+    it 'does not create a greeting when a template message already exists' do
+      conversation.inbox.update!(greeting_enabled: true, greeting_message: 'Hello welcome to our board.')
+      create(:message, conversation: conversation, message_type: :template, content: 'existing')
+
+      expect do
+        described_class.perform_if_applicable(conversation)
+      end.not_to(change { conversation.messages.template.count })
+    end
   end
 end
