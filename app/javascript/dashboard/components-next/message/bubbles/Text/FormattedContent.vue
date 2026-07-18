@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { useMessageContext } from '../../provider.js';
 
 import MessageFormatter from 'shared/helpers/MessageFormatter.js';
+import { formatGreetingContent } from 'shared/helpers/greetingContentHelper';
 import { MESSAGE_VARIANTS } from '../../constants';
 
 const props = defineProps({
@@ -12,14 +13,18 @@ const props = defineProps({
   },
 });
 
-const { variant } = useMessageContext();
+const { variant, contentAttributes } = useMessageContext();
 
 const formattedContent = computed(() => {
   if (variant.value === MESSAGE_VARIANTS.ACTIVITY) {
     return props.content;
   }
 
-  return new MessageFormatter(props.content).formattedMessage;
+  return formatGreetingContent(
+    props.content,
+    contentAttributes.value,
+    content => new MessageFormatter(content).formattedMessage
+  );
 });
 </script>
 

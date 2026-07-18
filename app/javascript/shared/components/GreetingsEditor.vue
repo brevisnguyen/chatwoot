@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue';
-import WootMessageEditor from 'dashboard/components/widgets/WootWriter/Editor.vue';
 import ResizableTextArea from 'shared/components/ResizableTextArea.vue';
+import GreetingsTinyMCE from 'shared/components/GreetingsTinyMCE.vue';
 
 const props = defineProps({
   modelValue: { type: String, default: '' },
@@ -20,15 +20,11 @@ const greetingsMessage = computed({
 
 <template>
   <section>
-    <div v-if="richtext">
-      <WootMessageEditor
-        v-model="greetingsMessage"
-        is-format-mode
-        enable-variables
-        :placeholder="placeholder"
-        :min-height="4"
-      />
-    </div>
+    <GreetingsTinyMCE
+      v-if="richtext"
+      v-model="greetingsMessage"
+      :placeholder="placeholder"
+    />
     <ResizableTextArea
       v-else
       v-model="greetingsMessage"
@@ -38,7 +34,6 @@ const greetingsMessage = computed({
       class="bg-transparent p-0 !outline-0 !outline-none !mb-0 mt-1 text-sm"
       :label="label"
       :placeholder="placeholder"
-      @input="handleInput"
     />
   </section>
 </template>

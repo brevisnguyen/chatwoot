@@ -78,6 +78,9 @@ importers:
       '@tanstack/vue-table':
         specifier: ^8.20.5
         version: 8.20.5(vue@3.5.12(typescript@5.6.2))
+      '@tinymce/tinymce-vue':
+        specifier: ^6.3.0
+        version: 6.3.0(tinymce@8.8.0)(vue@3.5.12(typescript@5.6.2))
       '@twilio/voice-sdk':
         specifier: ^2.12.4
         version: 2.17.0
@@ -201,6 +204,9 @@ importers:
       tinykeys:
         specifier: ^3.0.0
         version: 3.0.0
+      tinymce:
+        specifier: ^8.8.0
+        version: 8.8.0
       urlpattern-polyfill:
         specifier: ^10.0.0
         version: 10.0.0
@@ -1359,6 +1365,15 @@ packages:
     engines: {node: '>=12'}
     peerDependencies:
       vue: '>=3.2'
+
+  '@tinymce/tinymce-vue@6.3.0':
+    resolution: {integrity: sha512-DSP8Jhd3XqCCliTnusfbmz3D8GqQ4iRzkc4aadYHDcJPVjkaqopJ61McOdH82CSy599vGLkPjGzqJYWJkRMiUA==}
+    peerDependencies:
+      tinymce: ^8.0.0 || ^7.0.0 || ^6.0.0 || ^5.5.1
+      vue: ^3.0.0
+    peerDependenciesMeta:
+      tinymce:
+        optional: true
 
   '@tootallnate/once@2.0.0':
     resolution: {integrity: sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==}
@@ -4438,6 +4453,9 @@ packages:
   tinykeys@3.0.0:
     resolution: {integrity: sha512-nazawuGv5zx6MuDfDY0rmfXjuOGhD5XU2z0GLURQ1nzl0RUe9OuCJq+0u8xxJZINHe+mr7nw8PWYYZ9WhMFujw==}
 
+  tinymce@8.8.0:
+    resolution: {integrity: sha512-rdhwXLHDjUTJ42Cvq1tKRDvS4h8oeQSiWeNGx82AKNdOm8FGAqKObeEPa6amFGobTXHcoFtPZRtyLHO5zV5mZA==}
+
   tinypool@1.0.2:
     resolution: {integrity: sha512-al6n+QEANGFOMf/dmUMsuS5/r9B06uwlyNjZZql/zv8J7ybHCgoihBNORZCY2mzUuAnomQa2JdhyHKzZxPCrFA==}
     engines: {node: ^18.0.0 || >=20.0.0}
@@ -6020,6 +6038,12 @@ snapshots:
     dependencies:
       '@tanstack/table-core': 8.20.5
       vue: 3.5.12(typescript@5.6.2)
+
+  '@tinymce/tinymce-vue@6.3.0(tinymce@8.8.0)(vue@3.5.12(typescript@5.6.2))':
+    dependencies:
+      vue: 3.5.12(typescript@5.6.2)
+    optionalDependencies:
+      tinymce: 8.8.0
 
   '@tootallnate/once@2.0.0': {}
 
@@ -9558,6 +9582,8 @@ snapshots:
       picomatch: 4.0.4
 
   tinykeys@3.0.0: {}
+
+  tinymce@8.8.0: {}
 
   tinypool@1.0.2: {}
 

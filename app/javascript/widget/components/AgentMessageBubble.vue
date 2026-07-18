@@ -1,5 +1,6 @@
 <script>
 import { useMessageFormatter } from 'shared/composables/useMessageFormatter';
+import { formatGreetingContent } from 'shared/helpers/greetingContentHelper';
 import ChatCard from 'shared/components/ChatCard.vue';
 import ChatCardForm from 'shared/components/ChatCardForm.vue';
 import ChatForm from 'shared/components/ChatForm.vue';
@@ -75,8 +76,12 @@ export default {
     isIntegrations() {
       return this.contentType === 'integrations';
     },
-    isGreeting() {
-      return this.messageContentAttributes?.template_type === 'greeting';
+    formattedMessageContent() {
+      return formatGreetingContent(
+        this.message,
+        this.messageContentAttributes,
+        this.formatMessage
+      );
     },
   },
   methods: {
@@ -106,9 +111,8 @@ export default {
       class="chat-bubble agent bg-n-background dark:bg-n-solid-3 text-n-slate-12"
     >
       <div
-        v-dompurify-html="formatMessage(message, false)"
+        v-dompurify-html="formattedMessageContent"
         class="message-content text-n-slate-12"
-        :class="{ 'text-center': isGreeting }"
       />
       <EmailInput
         v-if="isTemplateEmail"
