@@ -1,0 +1,17 @@
+{
+  "SESSION_LIMIT": {
+    "TITLE": "已達到使用中工作階段上限",
+    "DESCRIPTION": "您的使用中工作階段數量已達上限。請結束一個工作階段後再登入。",
+    "END": "結束",
+    "END_ALL": "結束所有工作階段",
+    "LOG_IN": "登入",
+    "CANCEL": "返回登入",
+    "UNKNOWN_DEVICE": "未知裝置",
+    "STARTED": "開始於"
+  },
+  "SESSION_REPLACED": {
+    "TITLE": "已在其他裝置登入",
+    "DESCRIPTION": "您已登出，因為您的帳號已在其他裝置上登入。",
+    "CONTINUE": "返回登入"
+  }
+}

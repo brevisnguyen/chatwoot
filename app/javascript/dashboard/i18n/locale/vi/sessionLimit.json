@@ -1,0 +1,17 @@
+{
+  "SESSION_LIMIT": {
+    "TITLE": "Đã đạt giới hạn phiên hoạt động",
+    "DESCRIPTION": "Bạn đã đạt giới hạn số phiên hoạt động. Vui lòng kết thúc một phiên trước khi đăng nhập.",
+    "END": "Kết thúc",
+    "END_ALL": "Kết thúc tất cả phiên",
+    "LOG_IN": "Đăng nhập",
+    "CANCEL": "Quay lại đăng nhập",
+    "UNKNOWN_DEVICE": "Thiết bị không xác định",
+    "STARTED": "Bắt đầu"
+  },
+  "SESSION_REPLACED": {
+    "TITLE": "Đã đăng nhập trên thiết bị khác",
+    "DESCRIPTION": "Bạn đã bị đăng xuất vì tài khoản của bạn đã được đăng nhập trên một thiết bị khác.",
+    "CONTINUE": "Quay lại đăng nhập"
+  }
+}

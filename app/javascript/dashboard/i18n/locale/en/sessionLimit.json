@@ -8,5 +8,10 @@
     "CANCEL": "Back to login",
     "UNKNOWN_DEVICE": "Unknown device",
     "STARTED": "Started"
+  },
+  "SESSION_REPLACED": {
+    "TITLE": "Signed in on another device",
+    "DESCRIPTION": "You have been logged out because your account was signed in on another device.",
+    "CONTINUE": "Back to login"
   }
 }

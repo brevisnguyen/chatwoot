@@ -68,6 +68,8 @@ class ActionCableConnector extends BaseActionCableConnector {
   };
 
   isAValidEvent = data => {
+    // user:logout is scoped to the user pubsub stream and may omit account_id
+    if (data?.account_id == null) return true;
     return this.app.$store.getters.getCurrentAccountId === data.account_id;
   };
 
@@ -111,7 +113,18 @@ class ActionCableConnector extends BaseActionCableConnector {
   };
 
   // eslint-disable-next-line class-methods-use-this
-  onLogout = () => AuthAPI.logout();
+  onLogout = data => {
+    const client = AuthAPI.getAuthData()?.client;
+    if (
+      data?.client_ids?.length &&
+      client &&
+      !data.client_ids.includes(client)
+    ) {
+      return;
+    }
+
+    AuthAPI.logout({ reason: data?.reason });
+  };
 
   onMessageCreated = data => {
     const {

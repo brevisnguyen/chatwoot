@@ -1,0 +1,17 @@
+{
+  "SESSION_LIMIT": {
+    "TITLE": "已达到活动会话上限",
+    "DESCRIPTION": "您的活动会话数量已达上限。请结束一个会话后再登录。",
+    "END": "结束",
+    "END_ALL": "结束所有会话",
+    "LOG_IN": "登录",
+    "CANCEL": "返回登录",
+    "UNKNOWN_DEVICE": "未知设备",
+    "STARTED": "开始于"
+  },
+  "SESSION_REPLACED": {
+    "TITLE": "已在其他设备登录",
+    "DESCRIPTION": "您已退出登录，因为您的账号已在其他设备上登录。",
+    "CONTINUE": "返回登录"
+  }
+}

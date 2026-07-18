@@ -76,12 +76,16 @@ export const deleteIndexedDBOnLogout = async () => {
   localStorage.removeItem('cw-idb-names');
 };
 
-export const clearCookiesOnLogout = () => {
+export const clearCookiesOnLogout = ({ reason } = {}) => {
   emitter.emit(CHATWOOT_RESET);
   emitter.emit(ANALYTICS_RESET);
   clearBrowserSessionCookies();
   clearLocalStorageOnLogout();
   clearSessionStorageOnLogout();
+  if (reason === 'session_replaced') {
+    window.location = '/app/login?error=session_replaced';
+    return;
+  }
   const globalConfig = window.globalConfig || {};
   const logoutRedirectLink = globalConfig.LOGOUT_REDIRECT_LINK || '/';
   window.location = logoutRedirectLink;

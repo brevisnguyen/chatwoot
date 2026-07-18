@@ -1,4 +1,6 @@
 class DeviseOverrides::SessionsController < DeviseTokenAuth::SessionsController
+  include SingleSessionLogin
+
   MAX_SESSIONS = ENV.fetch('MAX_USER_SESSIONS', 25).to_i
 
   # Prevent session parameter from being passed
@@ -23,7 +25,10 @@ class DeviseOverrides::SessionsController < DeviseTokenAuth::SessionsController
   end
 
   def render_create_success
-    track_user_session unless @impersonation
+    unless @impersonation
+      track_user_session
+      enforce_single_session!
+    end
     render partial: 'devise/auth', formats: [:json], locals: { resource: @resource }
   end
 
@@ -217,19 +222,6 @@ class DeviseOverrides::SessionsController < DeviseTokenAuth::SessionsController
   def handle_sessions_limit_for_login(user)
     sessions = user.user_sessions.order(last_activity_at: :desc).map { |s| s.slice(*PICKER_SESSION_FIELDS) }
     render json: { sessions_limit_reached: true, sessions: sessions }, status: :conflict
-  end
-
-  def track_user_session
-    client_id = @token&.try(:client) || response.headers['client']
-    return unless client_id.present? && @resource.present?
-
-    UserSessionTrackingService.new(
-      user: @resource,
-      request: request,
-      client_id: client_id
-    ).create_or_update!
-  rescue StandardError => e
-    Rails.logger.warn "Session tracking failed: #{e.message}"
   end
 end
 

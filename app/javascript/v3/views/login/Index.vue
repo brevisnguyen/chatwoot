@@ -20,6 +20,9 @@ import Icon from 'dashboard/components-next/icon/Icon.vue';
 import NextButton from 'dashboard/components-next/button/Button.vue';
 import MfaVerification from 'dashboard/components/auth/MfaVerification.vue';
 import SessionLimitOverlay from 'dashboard/components/auth/SessionLimitOverlay.vue';
+import SessionReplacedOverlay from 'dashboard/components/auth/SessionReplacedOverlay.vue';
+
+const SESSION_REPLACED_ERROR = 'session_replaced';
 
 const ERROR_MESSAGES = {
   'no-account-found': 'LOGIN.OAUTH.NO_ACCOUNT_FOUND',
@@ -40,6 +43,7 @@ export default {
     SimpleDivider,
     MfaVerification,
     SessionLimitOverlay,
+    SessionReplacedOverlay,
     Icon,
   },
   props: {
@@ -74,6 +78,7 @@ export default {
       mfaToken: null,
       sessionsLimitReached: false,
       limitedSessions: [],
+      sessionReplaced: false,
     };
   },
   validations() {
@@ -110,6 +115,14 @@ export default {
   created() {
     if (this.ssoAuthToken) {
       this.submitLogin();
+    }
+    if (this.authError === SESSION_REPLACED_ERROR) {
+      this.sessionReplaced = true;
+      this.requestIdleCallbackPolyfill(() => {
+        const { query } = this.$route;
+        this.$router.replace({ query: { ...query, error: undefined } });
+      });
+      return;
     }
     if (this.authError) {
       const messageKey = ERROR_MESSAGES[this.authError] ?? 'LOGIN.API.UNAUTH';
@@ -284,6 +297,9 @@ export default {
       this.limitedSessions = [];
       this.credentials.password = '';
     },
+    handleSessionReplacedContinue() {
+      this.sessionReplaced = false;
+    },
   },
 };
 </script>
@@ -315,8 +331,13 @@ export default {
       </p>
     </section>
 
+    <!-- Session replaced (kicked by another device) -->
+    <section v-if="sessionReplaced" class="mt-11">
+      <SessionReplacedOverlay @continue="handleSessionReplacedContinue" />
+    </section>
+
     <!-- Session Limit Section -->
-    <section v-if="sessionsLimitReached" class="mt-11">
+    <section v-else-if="sessionsLimitReached" class="mt-11">
       <SessionLimitOverlay
         :sessions="limitedSessions"
         @revoke="handleSessionRevoke"

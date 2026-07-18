@@ -29,6 +29,7 @@ import login from './login.json';
 import macros from './macros.json';
 import mfa from './mfa.json';
 import onboarding from './onboarding.json';
+import sessionLimit from './sessionLimit.json';
 import report from './report.json';
 import resetPassword from './resetPassword.json';
 import search from './search.json';
@@ -72,6 +73,7 @@ export default {
   ...macros,
   ...mfa,
   ...onboarding,
+  ...sessionLimit,
   ...report,
   ...resetPassword,
   ...search,

@@ -203,6 +203,26 @@ RSpec.describe DeviseOverrides::SessionsController, type: :controller do
 
         expect(response).to have_http_status(:success)
       end
+
+      it 'revokes other sessions after successful login and broadcasts logout' do
+        request.env['HTTP_USER_AGENT'] = browser_ua
+        2.times { |i| seed_token("old#{i}", expiry_offset_days: 30) }
+        pubsub_token = user.pubsub_token
+
+        expect(ActionCableBroadcastJob).to receive(:perform_later).with(
+          [pubsub_token],
+          'user:logout',
+          hash_including(reason: 'session_replaced')
+        )
+
+        post :create, params: login_params
+
+        expect(response).to have_http_status(:success)
+        new_client_id = response.headers['client']
+        expect(user.reload.tokens.keys).to eq([new_client_id])
+        expect(user.user_sessions.pluck(:client_id)).to eq([new_client_id])
+        expect(user.tokens.keys).not_to include('old0', 'old1')
+      end
     end
 
     context 'when at the limit from a browser with full tracking' do
@@ -253,13 +273,13 @@ RSpec.describe DeviseOverrides::SessionsController, type: :controller do
         expect(response).to have_http_status(:success)
       end
 
-      it 'drops an untracked token first, keeping the tracked session alive' do
+      it 'silent-evicts then keeps only the new login session' do
         post :create, params: login_params
 
-        tokens = user.reload.tokens.keys
-        expect(tokens).to include('tracked')
-        # legacy0 expires soonest -> evict_oldest_token picks it
-        expect(tokens).not_to include('legacy0')
+        expect(response).to have_http_status(:success)
+        new_client_id = response.headers['client']
+        expect(user.reload.tokens.keys).to eq([new_client_id])
+        expect(user.tokens.keys).not_to include('legacy0', 'tracked')
       end
     end
 
@@ -343,6 +363,25 @@ RSpec.describe DeviseOverrides::SessionsController, type: :controller do
       end.not_to change(user.user_sessions, :count)
 
       expect(response).to have_http_status(:success)
+    end
+
+    it 'does not revoke other sessions on impersonation login' do
+      user.tokens = user.tokens.merge(
+        'existing' => { 'token' => 'x', 'expiry' => 30.days.from_now.to_i }
+      )
+      user.save!
+      user.user_sessions.create!(client_id: 'existing', last_activity_at: Time.current)
+      sso_token = user.generate_sso_auth_token(impersonation: true)
+
+      expect(ActionCableBroadcastJob).not_to receive(:perform_later).with(
+        anything, 'user:logout', anything
+      )
+
+      post :create, params: { email: user.email, sso_auth_token: sso_token }
+
+      expect(response).to have_http_status(:success)
+      expect(user.reload.tokens.keys).to include('existing')
+      expect(user.user_sessions.exists?(client_id: 'existing')).to be true
     end
 
     it 'creates a short-lived token for impersonation login' do
