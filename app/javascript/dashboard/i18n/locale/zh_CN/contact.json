@@ -5,6 +5,7 @@
     "PHONE_NUMBER": "电话号码",
     "IDENTIFIER": "标识符",
     "COPY_SUCCESSFUL": "已成功复制到剪贴板",
+    "COPY_SESSION_INFO": "复制浏览器、操作系统和 IP",
     "COMPANY": "公司",
     "LOCATION": "位置",
     "BROWSER_LANGUAGE": "浏览器语言",

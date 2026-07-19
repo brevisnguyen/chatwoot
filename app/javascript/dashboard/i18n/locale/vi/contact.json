@@ -5,6 +5,7 @@
     "PHONE_NUMBER": "Số điện thoại",
     "IDENTIFIER": "Định danh",
     "COPY_SUCCESSFUL": "Đã sao chép mã thành công",
+    "COPY_SESSION_INFO": "Sao chép trình duyệt, hệ điều hành và IP",
     "COMPANY": "Công ty",
     "LOCATION": "Vị trí",
     "BROWSER_LANGUAGE": "Ngôn ngữ của Trình duyệt",

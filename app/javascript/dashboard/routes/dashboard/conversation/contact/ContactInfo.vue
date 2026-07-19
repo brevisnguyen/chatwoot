@@ -8,6 +8,7 @@ import {
 import { dynamicTime } from 'shared/helpers/timeHelper';
 import { useAdmin } from 'dashboard/composables/useAdmin';
 import { formatIpLocation } from 'dashboard/composables/useIpLocation';
+import { copyTextToClipboard } from 'shared/helpers/clipboard';
 import ContactInfoRow from './ContactInfoRow.vue';
 import Avatar from 'next/avatar/Avatar.vue';
 import SocialIcons from './SocialIcons.vue';
@@ -34,6 +35,10 @@ export default {
   },
   props: {
     contact: {
+      type: Object,
+      default: () => ({}),
+    },
+    conversationAttributes: {
       type: Object,
       default: () => ({}),
     },
@@ -66,6 +71,22 @@ export default {
     },
     additionalAttributes() {
       return this.contact.additional_attributes || {};
+    },
+    browserInfo() {
+      return this.conversationAttributes.browser || {};
+    },
+    browserName() {
+      const { browser_name: name = '', browser_version: version = '' } =
+        this.browserInfo;
+      return `${name} ${version}`.trim();
+    },
+    platformName() {
+      const { platform_name: name = '', platform_version: version = '' } =
+        this.browserInfo;
+      return `${name} ${version}`.trim();
+    },
+    createdAtIp() {
+      return this.additionalAttributes.created_at_ip || '';
     },
     location() {
       const { locationText, countryCode } = formatIpLocation(
@@ -137,8 +158,14 @@ export default {
     cancelNameEdit() {
       this.isEditingName = false;
     },
-    onFieldUpdate(field, value) {
-      this.updateContactField({ [field]: value });
+    async copySessionInfo() {
+      const text = [
+        `${this.$t('CONTACT_PANEL.BROWSER')}: ${this.browserName}`,
+        `${this.$t('CONTACT_PANEL.OS')}: ${this.platformName}`,
+        `${this.$t('CONTACT_PANEL.IP_ADDRESS')}: ${this.createdAtIp}`,
+      ].join('\n');
+      await copyTextToClipboard(text);
+      useAlert(this.$t('CONTACT_PANEL.COPY_SUCCESSFUL'));
     },
     async updateContactField(attrs) {
       const contactId = this.contact.id;
@@ -238,24 +265,22 @@ export default {
         </p>
         <div class="flex flex-col items-start w-full gap-2">
           <ContactInfoRow
-            :href="contact.email ? `mailto:${contact.email}` : ''"
-            :value="contact.email"
-            icon="mail"
-            emoji="✉️"
-            :title="$t('CONTACT_PANEL.EMAIL_ADDRESS')"
-            show-copy
-            editable
-            @update="value => onFieldUpdate('email', value)"
+            :value="browserName"
+            icon="globe-desktop"
+            emoji="🌐"
+            :title="$t('CONTACT_PANEL.BROWSER')"
           />
           <ContactInfoRow
-            :href="contact.phone_number ? `tel:${contact.phone_number}` : ''"
-            :value="contact.phone_number"
-            icon="call"
-            emoji="📞"
-            :title="$t('CONTACT_PANEL.PHONE_NUMBER')"
-            show-copy
-            editable
-            @update="value => onFieldUpdate('phone_number', value)"
+            :value="platformName"
+            icon="globe"
+            emoji="💻"
+            :title="$t('CONTACT_PANEL.OS')"
+          />
+          <ContactInfoRow
+            :value="createdAtIp"
+            icon="location"
+            emoji="📍"
+            :title="$t('CONTACT_PANEL.IP_ADDRESS')"
           />
           <ContactInfoRow
             v-if="contact.identifier"
@@ -263,22 +288,6 @@ export default {
             icon="contact-identify"
             emoji="🪪"
             :title="$t('CONTACT_PANEL.IDENTIFIER')"
-          />
-          <ContactInfoRow
-            :value="additionalAttributes.company_name"
-            icon="building-bank"
-            emoji="🏢"
-            :title="$t('CONTACT_PANEL.COMPANY')"
-            editable
-            @update="
-              value =>
-                updateContactField({
-                  additional_attributes: {
-                    ...additionalAttributes,
-                    company_name: value,
-                  },
-                })
-            "
           />
           <ContactInfoRow
             v-if="location || additionalAttributes.location"
@@ -291,6 +300,14 @@ export default {
         </div>
       </div>
       <div class="flex items-center w-full mt-0.5 gap-2">
+        <NextButton
+          v-tooltip.top-end="$t('CONTACT_PANEL.COPY_SESSION_INFO')"
+          icon="i-lucide-clipboard"
+          slate
+          faded
+          sm
+          @click="copySessionInfo"
+        />
         <ComposeConversation :contact-id="String(contact.id)">
           <template #trigger>
             <NextButton
