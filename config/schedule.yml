@@ -74,3 +74,10 @@ remove_orphan_conversations_job:
   cron: '0 */12 * * *'
   class: 'Internal::RemoveOrphanConversationsJob'
   queue: housekeeping
+
+# executed every 12 hours
+# to remove expired messages from resolved conversations based on account retention
+remove_expired_messages_job:
+  cron: '0 */12 * * *'
+  class: 'Internal::RemoveExpiredMessagesJob'
+  queue: housekeeping

@@ -595,6 +595,20 @@
         "DESCRIPTION": "Configure rules and required fields for conversation resolution."
       }
     },
+    "MESSAGE_RETENTION": {
+      "TITLE": "Message retention",
+      "NOTE": "Automatically delete messages older than the configured duration from resolved conversations. CSAT survey messages and responses are kept.",
+      "DURATION": {
+        "LABEL": "Delete messages older than",
+        "HELP": "Minimum retention is 1 day. Only messages in resolved conversations are deleted.",
+        "ERROR": "Retention duration must be at least 1 day"
+      },
+      "UPDATE_BUTTON": "Update retention settings",
+      "API": {
+        "SUCCESS": "Message retention settings updated successfully",
+        "ERROR": "Could not update message retention settings, please try again"
+      }
+    },
     "REQUIRED_ATTRIBUTES": {
       "TITLE": "Attributes required on resolution",
       "DESCRIPTION": "When resolving a conversation, agents will be prompted to fill these attributes if they haven't yet.",

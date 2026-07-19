@@ -567,6 +567,20 @@
         "DESCRIPTION": "設定對話解決的規則和必填欄位。"
       }
     },
+    "MESSAGE_RETENTION": {
+      "TITLE": "訊息保留",
+      "NOTE": "自動刪除已解決對話中超過設定時間的訊息。CSAT 問卷訊息與回覆會被保留。",
+      "DURATION": {
+        "LABEL": "刪除早於以下時間的訊息",
+        "HELP": "最短保留時間為 1 天。僅會刪除已解決對話中的訊息。",
+        "ERROR": "保留時間必須至少為 1 天"
+      },
+      "UPDATE_BUTTON": "更新保留設定",
+      "API": {
+        "SUCCESS": "訊息保留設定已成功更新",
+        "ERROR": "無法更新訊息保留設定，請再試一次"
+      }
+    },
     "REQUIRED_ATTRIBUTES": {
       "TITLE": "解決時必填的屬性",
       "DESCRIPTION": "解決對話時，系統會提示客服人員填寫尚未完成的屬性。",
