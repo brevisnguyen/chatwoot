@@ -45,6 +45,10 @@ Rails.application.configure do
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = ActiveModel::Type::Boolean.new.cast(ENV.fetch('FORCE_SSL', false))
 
+  # Trust X-Forwarded-Proto from SSL-terminating proxies (CDN/ESA/nginx).
+  # Origin can speak HTTP while public URLs (ActiveStorage direct upload, etc.) stay https.
+  config.assume_ssl = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ASSUME_SSL', true))
+
   # Use the lowest log level to ensure availability of diagnostic information
   # when problems arise.
   config.log_level = ENV.fetch('LOG_LEVEL', 'info').to_sym
