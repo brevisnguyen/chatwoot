@@ -572,8 +572,8 @@
       "NOTE": "Tự động xóa các tin nhắn cũ hơn khoảng thời gian đã cấu hình trong các cuộc hội thoại đã giải quyết. Tin nhắn và phản hồi khảo sát CSAT sẽ được giữ lại.",
       "DURATION": {
         "LABEL": "Xóa tin nhắn cũ hơn",
-        "HELP": "Thời gian lưu trữ tối thiểu là 1 ngày. Chỉ xóa tin nhắn trong các cuộc hội thoại đã giải quyết.",
-        "ERROR": "Thời gian lưu trữ phải ít nhất 1 ngày"
+        "HELP": "Thời gian lưu trữ tối thiểu là 30 phút. Chỉ xóa tin nhắn trong các cuộc hội thoại đã giải quyết.",
+        "ERROR": "Thời gian lưu trữ phải ít nhất 30 phút"
       },
       "UPDATE_BUTTON": "Cập nhật cài đặt lưu trữ",
       "API": {

@@ -9,7 +9,7 @@ import NextButton from 'dashboard/components-next/button/Button.vue';
 import DurationInput from 'next/input/DurationInput.vue';
 import { DURATION_UNITS } from 'dashboard/components-next/input/constants';
 
-const MINIMUM_RETENTION_MINUTES = 1440;
+const MINIMUM_RETENTION_MINUTES = 30;
 
 const { t } = useI18n();
 const duration = ref(0);

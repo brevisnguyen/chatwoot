@@ -1,7 +1,7 @@
 class Internal::RemoveExpiredMessagesService
   BATCH_SIZE = 1000
   PER_ACCOUNT_LIMIT = 50_000
-  MINIMUM_RETENTION_MINUTES = 1440
+  MINIMUM_RETENTION_MINUTES = 30
 
   def perform
     total_deleted = 0

@@ -600,8 +600,8 @@
       "NOTE": "Automatically delete messages older than the configured duration from resolved conversations. CSAT survey messages and responses are kept.",
       "DURATION": {
         "LABEL": "Delete messages older than",
-        "HELP": "Minimum retention is 1 day. Only messages in resolved conversations are deleted.",
-        "ERROR": "Retention duration must be at least 1 day"
+        "HELP": "Minimum retention is 30 minutes. Only messages in resolved conversations are deleted.",
+        "ERROR": "Retention duration must be at least 30 minutes"
       },
       "UPDATE_BUTTON": "Update retention settings",
       "API": {
