@@ -51,12 +51,17 @@ const backButtonUrl = computed(() => {
     conversation_through_participating: 'participating',
     conversation_through_unattended: 'unattended',
   };
+  const conversationStatusMap = {
+    conversation_through_current: 'not_resolved',
+    conversation_through_resolved: 'resolved',
+  };
   return conversationListPageURL({
     accountId: accountId.value,
     inboxId,
     label,
     teamId,
     conversationType: conversationTypeMap[name],
+    conversationStatus: conversationStatusMap[name],
     customViewId,
   });
 });
