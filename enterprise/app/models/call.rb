@@ -25,6 +25,7 @@
 #
 #  index_calls_on_account_id_and_contact_id       (account_id,contact_id)
 #  index_calls_on_account_id_and_conversation_id  (account_id,conversation_id)
+#  index_calls_on_account_id_and_created_at       (account_id,created_at)
 #  index_calls_on_message_id                      (message_id)
 #  index_calls_on_provider_and_provider_call_id   (provider,provider_call_id) UNIQUE
 #
@@ -76,6 +77,17 @@ class Call < ApplicationRecord
 
   def direction_label
     DISPLAY_DIRECTION[direction]
+  end
+
+  # Normalize filter values back to stored forms so API/dashboard clients can
+  # query using either the display value (inbound/outbound, in-progress) or the
+  # stored value (incoming/outgoing, in_progress).
+  def self.direction_from_label(value)
+    DISPLAY_DIRECTION.key(value) || value
+  end
+
+  def self.status_from_display(value)
+    value.to_s.tr('-', '_')
   end
 
   def ringing?

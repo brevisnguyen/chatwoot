@@ -19,6 +19,7 @@ const createConversation = (params = {}) => {
         name: params.fullName,
         email: params.emailAddress,
         phone_number: params.phoneNumber,
+        custom_attributes: params.contactCustomAttributes,
       },
       message,
       custom_attributes: params.customAttributes,
