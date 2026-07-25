@@ -269,6 +269,23 @@ RSpec.describe Message do
       expect(conversation.open?).to be false
       expect(conversation.pending?).to be true
     end
+
+    it 'reassigns the inbox agent bot when a resolved conversation is reopened' do
+      agent = create(:user, account: conversation.account)
+      agent_bot = create(:agent_bot)
+      inbox = conversation.inbox
+      inbox.agent_bot = agent_bot
+      inbox.save!
+      conversation.update!(status: :resolved, assignee: agent, assignee_agent_bot: nil)
+
+      message.save!
+      conversation.reload
+
+      expect(conversation).to be_pending
+      expect(conversation.assignee).to be_nil
+      expect(conversation.assignee_agent_bot).to eq(agent_bot)
+      expect(conversation.assignee_type).to eq('AgentBot')
+    end
   end
 
   describe '#mark_pending_conversation_as_open_for_human_response' do
