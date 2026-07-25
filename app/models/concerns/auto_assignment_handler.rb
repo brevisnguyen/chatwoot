@@ -18,6 +18,7 @@ module AutoAssignmentHandler
       # Coalesces bursts of triggers per inbox. Fine if the job runs even when the
       # surrounding save rolls back: it only scans the inbox's current unassigned
       # conversations, so running it for an uncommitted change is harmless.
+      clear_offline_assignee_for_v2!
       AutoAssignment::AssignmentJob.enqueue_for_inbox(inbox.id)
     else
       # Use legacy assignment system
@@ -43,7 +44,25 @@ module AutoAssignmentHandler
     # assignee-blank check below. The AssignmentJob needs to run to rebalance assignments.
     return true if conversation_status_changed_to_resolved_or_snoozed?
 
-    # run only if assignee is blank or doesn't have access to inbox
-    assignee.blank? || inbox.members.exclude?(assignee)
+    # run only if assignee is blank, doesn't have access to inbox, or is not online
+    assignee.blank? || inbox.members.exclude?(assignee) || !assignee_online_for_assignment?
+  end
+
+  def assignee_online_for_assignment?
+    return false if assignee_id.blank?
+
+    OnlineStatusTracker.get_available_users(account_id)[assignee_id.to_s] == 'online'
+  end
+
+  # V2 only assigns unassigned conversations. Clear an offline/busy assignee on reopen so
+  # AssignmentJob can claim the conversation for an online agent. Skip when nobody is online
+  # so we do not orphan the conversation.
+  def clear_offline_assignee_for_v2!
+    return unless conversation_status_changed_to_open?
+    return if assignee_id.blank?
+    return if assignee_online_for_assignment?
+    return if inbox.available_agents.empty?
+
+    update_columns(assignee_id: nil) # rubocop:disable Rails/SkipsModelValidations
   end
 end
