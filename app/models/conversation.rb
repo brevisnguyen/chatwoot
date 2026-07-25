@@ -253,6 +253,17 @@ class Conversation < ApplicationRecord
     dispatcher_dispatch(CONVERSATION_UPDATED, previous_changes)
   end
 
+  # Reopen path for bot-enabled inboxes: mark pending and hand back to the inbox AgentBot
+  # (when present) so the conversation surfaces under the AI tab.
+  def reopen_as_pending_for_bot!
+    attrs = { status: :pending }
+    if inbox.agent_bot_inbox&.active?
+      attrs[:assignee_id] = nil
+      attrs[:assignee_agent_bot] = inbox.agent_bot
+    end
+    update!(attrs)
+  end
+
   private
 
   def execute_after_update_commit_callbacks
@@ -307,17 +318,6 @@ class Conversation < ApplicationRecord
     return unless inbox.agent_bot_inbox&.active?
 
     self.assignee_agent_bot = inbox.agent_bot
-  end
-
-  # Reopen path for bot-enabled inboxes: mark pending and hand back to the inbox AgentBot
-  # (when present) so the conversation surfaces under the AI tab.
-  def reopen_as_pending_for_bot!
-    attrs = { status: :pending }
-    if inbox.agent_bot_inbox&.active?
-      attrs[:assignee_id] = nil
-      attrs[:assignee_agent_bot] = inbox.agent_bot
-    end
-    update!(attrs)
   end
 
   def handle_campaign_status
