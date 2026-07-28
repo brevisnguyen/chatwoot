@@ -39,6 +39,7 @@
 #  index_conversations_on_campaign_id                 (campaign_id)
 #  index_conversations_on_contact_id                  (contact_id)
 #  index_conversations_on_contact_inbox_id            (contact_inbox_id)
+#  index_conversations_on_created_at                  (created_at)
 #  index_conversations_on_first_reply_created_at      (first_reply_created_at)
 #  index_conversations_on_id_and_account_id           (account_id,id)
 #  index_conversations_on_identifier_and_account_id   (identifier,account_id)
@@ -177,7 +178,8 @@ class Conversation < ApplicationRecord
 
   def bot_handoff!
     update(waiting_since: Time.current) if waiting_since.blank?
-    update!(status: :open, assignee_agent_bot_id: nil)
+    self.assignee_agent_bot = nil
+    open!
     dispatcher_dispatch(CONVERSATION_BOT_HANDOFF)
   end
 
@@ -306,8 +308,7 @@ class Conversation < ApplicationRecord
 
     return handle_campaign_status if campaign.present?
 
-    # TODO: make this an inbox config instead of assuming bot conversations should start as pending
-    self.status = :pending if inbox.active_bot?
+    set_active_bot_conversation if inbox.active_bot?
   end
 
   # When an inbox has an active webhook AgentBot, mark the bot as the assignee so the
@@ -321,8 +322,15 @@ class Conversation < ApplicationRecord
   end
 
   def handle_campaign_status
-    # If campaign has no sender (bot-initiated) and inbox has active bot, let bot handle it
-    self.status = :pending if campaign.sender_id.nil? && inbox.active_bot?
+    set_active_bot_conversation if campaign.sender_id.nil? && inbox.active_bot?
+  end
+
+  def set_active_bot_conversation
+    # TODO: make this an inbox config instead of assuming bot conversations should start as pending
+    self.status = :pending
+    return unless inbox.agent_bot_inbox&.active? && assignee_id.blank?
+
+    self.assignee_agent_bot = inbox.agent_bot
   end
 
   def notify_conversation_creation
