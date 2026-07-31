@@ -1,6 +1,6 @@
 # refer : https://redis.io/commands
 
-module Redis::Alfred
+module Redis::Alfred # rubocop:disable Metrics/ModuleLength
   include Redis::RedisKeys
 
   class << self
@@ -130,6 +130,11 @@ module Redis::Alfred
       # New syntax: score is an array of [score, member] pairs; old syntax: discrete score/value
       pairs = value.nil? && score.is_a?(Array) ? score : [[score, value]]
       $alfred.with { |conn| conn.zadd(key, pairs) }
+    end
+
+    # remove a value from a sorted set
+    def zrem(key, value)
+      $alfred.with { |conn| conn.zrem(key, value) }
     end
 
     # get score of a value for key

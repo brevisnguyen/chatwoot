@@ -164,6 +164,20 @@ RSpec.describe DeviseOverrides::SessionsController, type: :controller do
     end
   end
 
+  describe 'DELETE #destroy' do
+    let(:user) { create(:user, account: create(:account)) }
+    let(:service) { instance_double(Agents::MarkOfflineService, perform: true) }
+
+    it 'marks the user offline before signing out' do
+      request.headers.merge!(user.create_new_auth_token)
+      expect(Agents::MarkOfflineService).to receive(:new).with(user: user).and_return(service)
+
+      delete :destroy
+
+      expect(response).to have_http_status(:success)
+    end
+  end
+
   describe 'session limit enforcement' do
     before { stub_const('DeviseOverrides::SessionsController::MAX_SESSIONS', 5) }
 

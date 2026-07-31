@@ -34,6 +34,23 @@ describe OnlineStatusTracker do
     end
   end
 
+  context 'when mark_user_offline' do
+    before do
+      described_class.update_presence(account.id, 'User', user1.id)
+    end
+
+    it 'removes the user presence and broadcasts the account presence' do
+      expect(ActionCable.server).to receive(:broadcast).with(
+        "account_#{account.id}",
+        { event: 'presence.update', data: { account_id: account.id, users: {} } }
+      )
+
+      described_class.mark_user_offline(account.id, user1.id)
+
+      expect(described_class.get_presence(account.id, 'User', user1.id)).to be_falsey
+    end
+  end
+
   context 'when get_available_contacts' do
     let(:online_contact) { create(:contact, account: account) }
     let(:offline_contact) { create(:contact, account: account) }

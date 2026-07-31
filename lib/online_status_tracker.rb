@@ -11,6 +11,14 @@ class OnlineStatusTracker
     ::Redis::Alfred.zadd(presence_key(account_id, obj_type), Time.now.to_i, obj_id)
   end
 
+  def self.mark_user_offline(account_id, user_id)
+    ::Redis::Alfred.zrem(presence_key(account_id, 'User'), user_id)
+    ActionCable.server.broadcast(
+      "account_#{account_id}",
+      { event: 'presence.update', data: { account_id: account_id, users: get_available_users(account_id) } }
+    )
+  end
+
   def self.get_presence(account_id, obj_type, obj_id)
     connected_time = ::Redis::Alfred.zscore(presence_key(account_id, obj_type), obj_id)
     duration = obj_type == 'Contact' ? CONTACT_PRESENCE_DURATION : PRESENCE_DURATION

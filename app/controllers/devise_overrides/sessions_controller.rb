@@ -24,6 +24,12 @@ class DeviseOverrides::SessionsController < DeviseTokenAuth::SessionsController
     super
   end
 
+  def destroy
+    user = @resource || current_user
+    Agents::MarkOfflineService.new(user: user).perform if user.present?
+    super
+  end
+
   def render_create_success
     unless @impersonation
       track_user_session
