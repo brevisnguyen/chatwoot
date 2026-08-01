@@ -3,6 +3,7 @@ import {
   dynamicTime,
   getDayDifferenceFromNow,
   hasOneDayPassed,
+  localizedMessageTimestamp,
   messageStamp,
   messageTimestamp,
   relativeDayTimestamp,
@@ -35,6 +36,38 @@ describe('#messageTimestamp', () => {
   });
   it('should return the message date and time in a different format if the message was sent in a different year', () => {
     expect(messageTimestamp(1612971343)).toEqual('Feb 10 2021, 3:35 PM');
+  });
+});
+
+describe('#localizedMessageTimestamp', () => {
+  it('returns a localized 24-hour timestamp for the current year', () => {
+    const timestamp = Math.floor(Date.UTC(2023, 7, 1, 14, 53, 0) / 1000);
+    const formattedTimestamp = localizedMessageTimestamp(timestamp, 'en-US');
+
+    expect(formattedTimestamp).toEqual('Aug 1, 14:53');
+    expect(formattedTimestamp).not.toMatch(/AM|PM/);
+  });
+
+  it('uses the supplied locale for date order and month labels', () => {
+    const timestamp = Math.floor(Date.UTC(2023, 7, 1, 14, 53, 0) / 1000);
+
+    expect(localizedMessageTimestamp(timestamp, 'vi')).toEqual('14:53 1 thg 8');
+  });
+
+  it('includes the year for timestamps outside the current year', () => {
+    const timestamp = Math.floor(Date.UTC(2021, 1, 10, 15, 35, 0) / 1000);
+
+    expect(localizedMessageTimestamp(timestamp, 'en-US')).toEqual(
+      'Feb 10, 2021, 15:35'
+    );
+  });
+
+  it('uses 00 for midnight hours', () => {
+    const timestamp = Math.floor(Date.UTC(2023, 7, 1, 0, 5, 0) / 1000);
+
+    expect(localizedMessageTimestamp(timestamp, 'en-US')).toEqual(
+      'Aug 1, 00:05'
+    );
   });
 });
 

@@ -37,6 +37,27 @@ export const messageTimestamp = (time, dateFormat = 'MMM d, yyyy') => {
 };
 
 /**
+ * Provides a locale-aware 24-hour timestamp for conversation message metadata.
+ * @param {number} time - Unix timestamp.
+ * @param {string} locale - BCP 47 locale tag.
+ * @returns {string} Formatted timestamp string.
+ */
+export const localizedMessageTimestamp = (time, locale) => {
+  const messageTime = fromUnixTime(time);
+  const options = {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    hourCycle: 'h23',
+    ...(!isSameYear(messageTime, new Date()) ? { year: 'numeric' } : {}),
+  };
+
+  return new Intl.DateTimeFormat(locale, options).format(messageTime);
+};
+
+/**
  * Formats a Unix timestamp relative to today: the time for today, a caller-
  * supplied label for yesterday, and a date otherwise. The yesterday label is
  * passed in so the caller keeps ownership of translation.

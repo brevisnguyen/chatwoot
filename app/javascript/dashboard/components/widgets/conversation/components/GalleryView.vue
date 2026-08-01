@@ -6,7 +6,8 @@ import { useAlert } from 'dashboard/composables';
 import { useStoreGetters } from 'dashboard/composables/store';
 import { useKeyboardEvents } from 'dashboard/composables/useKeyboardEvents';
 import { useImageZoom } from 'dashboard/composables/useImageZoom';
-import { messageTimestamp } from 'shared/helpers/timeHelper';
+import { localizedMessageTimestamp } from 'shared/helpers/timeHelper';
+import { useLocale } from 'shared/composables/useLocale';
 import { downloadFile } from '@chatwoot/utils';
 
 import NextButton from 'dashboard/components-next/button/Button.vue';
@@ -33,6 +34,7 @@ const show = defineModel('show', { type: Boolean, default: false });
 
 const { t } = useI18n();
 const getters = useStoreGetters();
+const { resolvedLocale } = useLocale();
 
 const ALLOWED_FILE_TYPES = {
   IMAGE: 'image',
@@ -73,7 +75,7 @@ const hasMoreThanOneAttachment = computed(
 const readableTime = computed(() => {
   const { created_at: createdAt } = activeAttachment.value;
   if (!createdAt) return '';
-  return messageTimestamp(createdAt, 'LLL d yyyy, h:mm a') || '';
+  return localizedMessageTimestamp(createdAt, resolvedLocale.value) || '';
 });
 
 const isImage = computed(
