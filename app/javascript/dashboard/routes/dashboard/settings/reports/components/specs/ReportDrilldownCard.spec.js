@@ -29,6 +29,10 @@ vi.mock('vue-i18n', () => ({
   }),
 }));
 
+vi.mock('shared/composables/useLocale', () => ({
+  useLocale: () => ({ resolvedLocale: { value: 'en-US' } }),
+}));
+
 vi.mock('shared/helpers/timeHelper', () => ({
   dynamicTime: timestamp => {
     const timestamps = {
@@ -45,6 +49,8 @@ vi.mock('shared/helpers/timeHelper', () => ({
     };
     return timestamps[time] || 'now';
   },
+  localizedMessageTimestamp: (timestamp, locale, { alwaysIncludeYear } = {}) =>
+    `localized-${timestamp}-${locale}-${alwaysIncludeYear ? 'y' : 'n'}`,
   dateFormat: timestamp => `date-${timestamp}`,
 }));
 
@@ -129,6 +135,9 @@ describe('ReportDrilldownCard.vue', () => {
     expect(wrapper.text()).toContain('2m');
     expect(wrapper.text()).not.toContain('4d • 4d');
     expect(messageCreatedLabel).toContain('Message created at');
+    // Uses the locale-aware 24h helper with the year always included.
+    expect(messageCreatedLabel).toContain('localized-1621103500-en-US-y');
+    expect(messageCreatedLabel).not.toMatch(/AM|PM/);
   });
 
   it('renders separate contact, inbox, and agent links', async () => {
@@ -191,5 +200,7 @@ describe('ReportDrilldownCard.vue', () => {
     expect(wrapper.text()).toContain('4d • 4d');
     expect(wrapper.text()).toContain('2m');
     expect(eventOccurredLabel).toContain('Event occurred at');
+    expect(eventOccurredLabel).toContain('localized-1621103500-en-US-y');
+    expect(eventOccurredLabel).not.toMatch(/AM|PM/);
   });
 });

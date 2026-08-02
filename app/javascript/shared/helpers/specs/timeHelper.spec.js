@@ -3,6 +3,7 @@ import {
   dynamicTime,
   getDayDifferenceFromNow,
   hasOneDayPassed,
+  localizedDateLabel,
   localizedMessageTimestamp,
   messageStamp,
   messageTimestamp,
@@ -68,6 +69,64 @@ describe('#localizedMessageTimestamp', () => {
     expect(localizedMessageTimestamp(timestamp, 'en-US')).toEqual(
       'Aug 1, 00:05'
     );
+  });
+
+  it('includes the year for current-year timestamps when alwaysIncludeYear is true', () => {
+    const timestamp = Math.floor(Date.UTC(2023, 7, 1, 14, 53, 0) / 1000);
+
+    expect(
+      localizedMessageTimestamp(timestamp, 'en-US', {
+        alwaysIncludeYear: true,
+      })
+    ).toEqual('Aug 1, 2023, 14:53');
+  });
+
+  it('omits the year for current-year timestamps when alwaysIncludeYear is false', () => {
+    const timestamp = Math.floor(Date.UTC(2023, 7, 1, 14, 53, 0) / 1000);
+
+    expect(
+      localizedMessageTimestamp(timestamp, 'en-US', {
+        alwaysIncludeYear: false,
+      })
+    ).toEqual('Aug 1, 14:53');
+  });
+});
+
+describe('#localizedDateLabel', () => {
+  it('formats a day preset with 2-digit day and short month for en-US', () => {
+    const date = new Date(Date.UTC(2023, 7, 2, 9, 0, 0));
+
+    expect(localizedDateLabel(date, 'en-US', 'day')).toEqual('Aug 02');
+  });
+
+  it('orders day and month according to the active locale', () => {
+    const date = new Date(Date.UTC(2023, 7, 2, 9, 0, 0));
+
+    expect(localizedDateLabel(date, 'vi', 'day')).toEqual('02 thg 8');
+  });
+
+  it('formats a month preset with short month and year', () => {
+    const date = new Date(Date.UTC(2023, 7, 2, 9, 0, 0));
+
+    expect(localizedDateLabel(date, 'en-US', 'month')).toEqual('Aug 2023');
+  });
+
+  it('formats a year preset with only the year', () => {
+    const date = new Date(Date.UTC(2023, 7, 2, 9, 0, 0));
+
+    expect(localizedDateLabel(date, 'en-US', 'year')).toEqual('2023');
+  });
+
+  it('formats a full preset with day, month, and year', () => {
+    const date = new Date(Date.UTC(2023, 7, 1, 9, 0, 0));
+
+    expect(localizedDateLabel(date, 'en-US', 'full')).toEqual('Aug 1, 2023');
+  });
+
+  it('falls back to the day preset for an unknown preset', () => {
+    const date = new Date(Date.UTC(2023, 7, 2, 9, 0, 0));
+
+    expect(localizedDateLabel(date, 'en-US', 'unknown')).toEqual('Aug 02');
   });
 });
 

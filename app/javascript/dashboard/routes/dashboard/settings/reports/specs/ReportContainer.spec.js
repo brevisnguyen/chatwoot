@@ -16,6 +16,10 @@ vi.mock('dashboard/composables/useReportMetrics', () => ({
   }),
 }));
 
+vi.mock('shared/composables/useLocale', () => ({
+  useLocale: () => ({ resolvedLocale: 'en-US' }),
+}));
+
 describe('ReportContainer.vue', () => {
   const mountComponent = ({
     dataPoint = { value: 2, timestamp: 1621103400 },
@@ -101,7 +105,7 @@ describe('ReportContainer.vue', () => {
     expect(drawer.props()).toMatchObject({
       metric: 'conversations_count',
       metricName: 'REPORT.METRICS.CONVERSATIONS.NAME',
-      bucketLabel: '15-May',
+      bucketLabel: 'May 15',
       bucketTimestamp: 1621103400,
       from: 1621103400,
       to: 1621621800,

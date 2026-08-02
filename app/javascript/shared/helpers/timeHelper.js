@@ -40,9 +40,17 @@ export const messageTimestamp = (time, dateFormat = 'MMM d, yyyy') => {
  * Provides a locale-aware 24-hour timestamp for conversation message metadata.
  * @param {number} time - Unix timestamp.
  * @param {string} locale - BCP 47 locale tag.
+ * @param {object} [options] - Formatting options.
+ * @param {boolean} [options.alwaysIncludeYear=false] - Always render the year,
+ *   even for timestamps in the current year. Reports tooltips pass `true` to
+ *   preserve the previous "always show year" behavior.
  * @returns {string} Formatted timestamp string.
  */
-export const localizedMessageTimestamp = (time, locale) => {
+export const localizedMessageTimestamp = (
+  time,
+  locale,
+  { alwaysIncludeYear = false } = {}
+) => {
   const messageTime = fromUnixTime(time);
   const options = {
     month: 'short',
@@ -51,10 +59,35 @@ export const localizedMessageTimestamp = (time, locale) => {
     minute: '2-digit',
     hour12: false,
     hourCycle: 'h23',
-    ...(!isSameYear(messageTime, new Date()) ? { year: 'numeric' } : {}),
+    ...(alwaysIncludeYear || !isSameYear(messageTime, new Date())
+      ? { year: 'numeric' }
+      : {}),
   };
 
   return new Intl.DateTimeFormat(locale, options).format(messageTime);
+};
+
+/**
+ * Provides a locale-aware date-only label for chart axes and heatmap headers.
+ * Unlike `localizedMessageTimestamp`, this omits the time of day and lets the
+ * caller pick a preset matching the report's "group by" granularity so Intl
+ * can order day/month/year according to the active locale.
+ * @param {Date} date - Date to format.
+ * @param {string} locale - BCP 47 locale tag.
+ * @param {('day'|'month'|'year'|'full')} [preset='day'] - Granularity preset.
+ * @returns {string} Formatted date string.
+ */
+export const localizedDateLabel = (date, locale, preset = 'day') => {
+  const presets = {
+    day: { day: '2-digit', month: 'short' },
+    month: { month: 'short', year: 'numeric' },
+    year: { year: 'numeric' },
+    full: { day: 'numeric', month: 'short', year: 'numeric' },
+  };
+
+  return new Intl.DateTimeFormat(locale, presets[preset] || presets.day).format(
+    date
+  );
 };
 
 /**

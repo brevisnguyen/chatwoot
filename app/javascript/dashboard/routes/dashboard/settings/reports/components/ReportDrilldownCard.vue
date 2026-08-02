@@ -3,12 +3,15 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import { formatTime } from '@chatwoot/utils';
-import format from 'date-fns/format';
-import fromUnixTime from 'date-fns/fromUnixTime';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
 import TimeAgo from 'dashboard/components/ui/TimeAgo.vue';
 import { frontendURL, conversationUrl } from 'dashboard/helper/URLHelper';
-import { dynamicTime, shortTimestamp } from 'shared/helpers/timeHelper';
+import {
+  dynamicTime,
+  localizedMessageTimestamp,
+  shortTimestamp,
+} from 'shared/helpers/timeHelper';
+import { useLocale } from 'shared/composables/useLocale';
 
 const props = defineProps({
   record: {
@@ -19,6 +22,7 @@ const props = defineProps({
 
 const { t } = useI18n();
 const route = useRoute();
+const { resolvedLocale } = useLocale();
 
 const conversation = computed(() => props.record.conversation || {});
 const message = computed(() => props.record.message || {});
@@ -33,7 +37,9 @@ const messageDirection = computed(() => message.value.message_type);
 const formatTimestamp = timestamp => {
   if (!timestamp) return '';
 
-  return format(fromUnixTime(timestamp), 'dd MMM yyyy, h:mm a');
+  return localizedMessageTimestamp(timestamp, resolvedLocale.value, {
+    alwaysIncludeYear: true,
+  });
 };
 
 const compactTimestamp = timestamp => {

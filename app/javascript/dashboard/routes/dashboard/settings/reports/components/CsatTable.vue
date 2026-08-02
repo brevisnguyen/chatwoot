@@ -4,7 +4,11 @@ import { useMapGetter } from 'dashboard/composables/store';
 import { useAccount } from 'dashboard/composables/useAccount';
 import { useI18n } from 'vue-i18n';
 
-import { messageStamp, dynamicTime } from 'shared/helpers/timeHelper';
+import {
+  dynamicTime,
+  localizedMessageTimestamp,
+} from 'shared/helpers/timeHelper';
+import { useLocale } from 'shared/composables/useLocale';
 
 import Pagination from 'dashboard/components/table/Pagination.vue';
 import UserAvatarWithName from 'dashboard/components/widgets/UserAvatarWithName.vue';
@@ -31,6 +35,7 @@ const { pageIndex } = defineProps({
 
 const emit = defineEmits(['pageChange']);
 const { t } = useI18n();
+const { resolvedLocale } = useLocale();
 const { isCloudFeatureEnabled, isOnChatwootCloud } = useAccount();
 const csatResponses = useMapGetter('csat/getCSATResponses');
 
@@ -66,7 +71,13 @@ const tableData = computed(() => {
     conversationId: response.conversation_id,
     csatReviewNotes: response.csat_review_notes,
     createdAgo: dynamicTime(response.created_at),
-    createdAt: messageStamp(response.created_at, 'LLL d yyyy, h:mm a'),
+    createdAt: localizedMessageTimestamp(
+      response.created_at,
+      resolvedLocale.value,
+      {
+        alwaysIncludeYear: true,
+      }
+    ),
     _original: response,
   }));
 });
