@@ -85,14 +85,12 @@ export const CALENDAR_PERIODS = {
 export const monthName = currentDate => format(currentDate, 'MMMM');
 export const yearName = currentDate => format(currentDate, 'yyyy');
 
-export const getIntlDateFormatForLocale = () => {
+export const getIntlDateFormatForLocale = locale => {
   const year = 2222;
   const month = 12;
   const day = 15;
   const date = new Date(year, month - 1, day);
-  const formattedDate = new Intl.DateTimeFormat(navigator.language).format(
-    date
-  );
+  const formattedDate = new Intl.DateTimeFormat(locale).format(date);
   return formattedDate
     .replace(`${year}`, 'yyyy')
     .replace(`${month}`, 'MM')

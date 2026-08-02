@@ -17,14 +17,6 @@ import {
 describe('Date formatting functions', () => {
   const testDate = new Date(2020, 4, 15); // May 15, 2020
 
-  beforeEach(() => {
-    vi.spyOn(navigator, 'language', 'get').mockReturnValue('en-US');
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('returns the correct month name from a date', () => {
     expect(monthName(testDate)).toBe('May');
   });
@@ -33,15 +25,14 @@ describe('Date formatting functions', () => {
     expect(yearName(testDate)).toBe('2020');
   });
 
-  it('returns the correct date format for the current locale en-US', () => {
+  it('returns the correct date format for the en-US locale', () => {
     const expected = 'MM/dd/yyyy';
-    expect(getIntlDateFormatForLocale()).toBe(expected);
+    expect(getIntlDateFormatForLocale('en-US')).toBe(expected);
   });
 
-  it('returns the correct date format for the current locale en-IN', () => {
-    vi.spyOn(navigator, 'language', 'get').mockReturnValue('en-IN');
+  it('returns the correct date format for the en-IN locale', () => {
     const expected = 'dd/MM/yyyy';
-    expect(getIntlDateFormatForLocale()).toBe(expected);
+    expect(getIntlDateFormatForLocale('en-IN')).toBe(expected);
   });
 });
 

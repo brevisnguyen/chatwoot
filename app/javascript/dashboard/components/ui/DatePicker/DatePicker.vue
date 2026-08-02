@@ -26,6 +26,7 @@ import {
   getWeek,
 } from 'date-fns';
 import { useAlert } from 'dashboard/composables';
+import { useLocale } from 'shared/composables/useLocale';
 import DatePickerButton from './components/DatePickerButton.vue';
 import CalendarDateInput from './components/CalendarDateInput.vue';
 import CalendarDateRange from './components/CalendarDateRange.vue';
@@ -36,6 +37,7 @@ import CalendarFooter from './components/CalendarFooter.vue';
 
 const emit = defineEmits(['dateRangeChanged']);
 const { t } = useI18n();
+const { resolvedLocale } = useLocale();
 
 const dateRange = defineModel('dateRange', {
   type: Array,
@@ -94,7 +96,7 @@ const canNavigateNext = computed(() => {
 const navigationLabel = computed(() => {
   const range = selectedRange.value;
   if (range === DATE_RANGE_TYPES.MONTH_TO_DATE) {
-    return new Intl.DateTimeFormat(navigator.language, {
+    return new Intl.DateTimeFormat(resolvedLocale.value, {
       month: 'long',
     }).format(selectedStartDate.value);
   }

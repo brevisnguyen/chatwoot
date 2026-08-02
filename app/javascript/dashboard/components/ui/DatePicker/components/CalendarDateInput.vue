@@ -5,6 +5,7 @@ import {
   getIntlDateFormatForLocale,
   CALENDAR_TYPES,
 } from '../helpers/DatePickerHelper';
+import { useLocale } from 'shared/composables/useLocale';
 
 const props = defineProps({
   calendarType: {
@@ -19,13 +20,16 @@ const props = defineProps({
 const emit = defineEmits(['update', 'validate', 'error']);
 
 const { START_CALENDAR, END_CALENDAR } = CALENDAR_TYPES;
+const { resolvedLocale } = useLocale();
 
-const dateFormat = computed(() => getIntlDateFormatForLocale()?.toUpperCase());
+const dateFormat = computed(() =>
+  getIntlDateFormatForLocale(resolvedLocale.value)?.toUpperCase()
+);
 
 const localDateValue = computed({
-  get: () => props.dateValue?.toLocaleDateString(navigator.language) || '',
+  get: () => props.dateValue?.toLocaleDateString(resolvedLocale.value) || '',
   set: newValue => {
-    const format = getIntlDateFormatForLocale();
+    const format = getIntlDateFormatForLocale(resolvedLocale.value);
     const parsedDate = parse(newValue, format, new Date());
     if (isValid(parsedDate)) {
       emit('update', parsedDate);
