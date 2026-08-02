@@ -213,12 +213,23 @@ onMounted(async () => {
                 }"
                 @click="navigateAndClose(child.to)"
               >
-                <component
-                  :is="renderIcon(child.icon).component"
+                <span
                   v-if="child.icon"
-                  v-bind="renderIcon(child.icon).props"
-                  class="size-4 flex-shrink-0"
-                />
+                  class="relative flex-shrink-0 size-4 grid place-content-center"
+                >
+                  <component
+                    :is="renderIcon(child.icon).component"
+                    v-bind="renderIcon(child.icon).props"
+                    class="size-4"
+                    :class="{
+                      'text-n-ruby-9': child.highlight && !isActive(child),
+                    }"
+                  />
+                  <span
+                    v-if="child.highlight"
+                    class="absolute top-0.5 end-0.5 size-1.5 rounded-full bg-n-ruby-9 ring-2 ring-n-alpha-3"
+                  />
+                </span>
                 <span class="flex-1 truncate">{{ child.label }}</span>
                 <SidebarUnreadBadge :count="child.badgeCount" />
               </button>

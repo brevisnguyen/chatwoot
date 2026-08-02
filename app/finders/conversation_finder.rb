@@ -168,6 +168,7 @@ class ConversationFinder
   end
 
   def filter_by_status
+    return if params[:conversation_type] == 'mention'
     return if params[:status] == 'all'
 
     return @conversations = @conversations.where.not(status: :resolved) if params[:status] == 'not_resolved'

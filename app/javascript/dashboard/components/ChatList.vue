@@ -478,8 +478,13 @@ const uniqueInboxes = computed(() => {
 function setFiltersFromUISettings() {
   const { conversations_filter_by: filterBy = {} } = uiSettings.value;
   const { status, order_by: orderBy } = filterBy;
-  activeStatus.value =
-    props.conversationStatus || status || wootConstants.STATUS_TYPE.OPEN;
+  // Mentions always show every status — ignore the saved/UI status filter.
+  if (props.conversationType === wootConstants.CONVERSATION_TYPE.MENTION) {
+    activeStatus.value = wootConstants.STATUS_TYPE.ALL;
+  } else {
+    activeStatus.value =
+      props.conversationStatus || status || wootConstants.STATUS_TYPE.OPEN;
+  }
   activeSortBy.value = Object.values(wootConstants.SORT_BY_TYPE).includes(
     orderBy
   )
@@ -965,7 +970,13 @@ watch(
 );
 watch(
   computed(() => props.conversationType),
-  () => resetAndFetchData()
+  () => {
+    if (props.conversationType === wootConstants.CONVERSATION_TYPE.MENTION) {
+      activeStatus.value = wootConstants.STATUS_TYPE.ALL;
+      store.dispatch('setChatStatusFilter', activeStatus.value);
+    }
+    resetAndFetchData();
+  }
 );
 watch(
   computed(() => props.conversationStatus),
@@ -1013,6 +1024,7 @@ watch(conversationFilters, (newVal, oldVal) => {
       :is-on-expanded-layout="isOnExpandedLayout"
       :conversation-stats="conversationStats"
       :is-list-loading="chatListLoading && !conversationList.length"
+      :conversation-type="props.conversationType"
       @add-folders="onClickOpenAddFoldersModal"
       @delete-folders="onClickOpenDeleteFoldersModal"
       @filters-modal="onToggleAdvanceFiltersModal"

@@ -16,6 +16,7 @@ const props = defineProps({
   isOnExpandedLayout: { type: Boolean, required: true },
   conversationStats: { type: Object, required: true },
   isListLoading: { type: Boolean, required: true },
+  conversationType: { type: String, default: '' },
 });
 
 const emit = defineEmits([
@@ -35,6 +36,10 @@ const onBasicFilterChange = (value, type) => {
 const hasAppliedFiltersOrActiveFolders = computed(() => {
   return props.hasAppliedFilters || props.hasActiveFolders;
 });
+
+const isMentionsView = computed(
+  () => props.conversationType === wootConstants.CONVERSATION_TYPE.MENTION
+);
 
 const allCount = computed(() => props.conversationStats?.allCount || 0);
 const formattedAllCount = computed(() => formatNumber(allCount.value));
@@ -79,7 +84,7 @@ const toggleConversationLayout = () => {
         {{ formattedAllCount }}
       </span>
       <span
-        v-if="!hasAppliedFiltersOrActiveFolders"
+        v-if="!hasAppliedFiltersOrActiveFolders && !isMentionsView"
         class="px-2 py-1 my-0.5 mx-1 rounded-md capitalize bg-n-slate-3 text-xxs text-n-slate-12 shrink-0"
       >
         {{ $t(`CHAT_LIST.CHAT_STATUS_FILTER_ITEMS.${activeStatus}.TEXT`) }}
@@ -157,6 +162,7 @@ const toggleConversationLayout = () => {
       <ConversationBasicFilter
         v-if="!hasAppliedFiltersOrActiveFolders"
         :is-on-expanded-layout="isOnExpandedLayout"
+        :hide-status-filter="isMentionsView"
         @change-filter="onBasicFilterChange"
       />
       <SwitchLayout

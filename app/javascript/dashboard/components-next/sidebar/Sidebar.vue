@@ -382,6 +382,7 @@ const menuItems = computed(() => {
           label: t('SIDEBAR.CURRENT_CONVERSATIONS'),
           icon: 'i-lucide-circle-dot',
           badgeCount: allUnreadCount.value,
+          highlight: allUnreadCount.value > 0,
           activeOn: ['conversation_through_current'],
           to: accountScopedRoute('current_conversations'),
         },
@@ -407,6 +408,8 @@ const menuItems = computed(() => {
           badgeCount: hasFilteredUnreadCounts.value
             ? mentionsUnreadCount.value
             : 0,
+          highlight:
+            hasFilteredUnreadCounts.value && mentionsUnreadCount.value > 0,
           activeOn: ['conversation_through_mentions'],
           to: accountScopedRoute('conversation_mentions'),
         },
