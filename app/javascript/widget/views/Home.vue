@@ -21,21 +21,49 @@ export default {
       conversationSize: 'conversation/getConversationSize',
       unreadMessageCount: 'conversation/getUnreadMessageCount',
       conversationParams: 'conversationAttributes/getConversationParams',
+      isCreatingConversation: 'conversation/getIsCreating',
     }),
     hasConversation() {
       return !!(this.conversationSize || this.conversationParams?.id);
     },
+    // Resolved + allow_messages_after_resolved off → cannot continue; must start new
+    mustStartNewConversation() {
+      const { allowMessagesAfterResolved } = window.chatwootWebChannel;
+      return (
+        this.hasConversation &&
+        !allowMessagesAfterResolved &&
+        this.conversationParams?.status === 'resolved'
+      );
+    },
+    canContinueConversation() {
+      return this.hasConversation && !this.mustStartNewConversation;
+    },
   },
   methods: {
-    ...mapActions('conversation', ['createConversation']),
+    ...mapActions('conversation', ['createConversation', 'clearConversations']),
+    ...mapActions('conversationAttributes', ['clearConversationAttributes']),
     async startConversation() {
-      if (this.preChatFormEnabled && !this.hasConversation) {
-        return this.router.replace({ name: 'prechat-form' });
+      if (this.isCreatingConversation) {
+        return;
       }
-      if (!this.hasConversation) {
+
+      const shouldStartNew =
+        !this.hasConversation || this.mustStartNewConversation;
+
+      if (this.preChatFormEnabled && shouldStartNew) {
+        await this.router.replace({ name: 'prechat-form' });
+        return;
+      }
+
+      if (shouldStartNew) {
+        if (this.mustStartNewConversation) {
+          this.clearConversations();
+          this.clearConversationAttributes();
+        }
         await this.createConversation({});
       }
-      return this.router.replace({ name: 'messages' });
+
+      await this.router.replace({ name: 'messages' });
     },
   },
 };
@@ -45,7 +73,7 @@ export default {
   <div class="z-50 flex flex-col justify-end flex-1 w-full p-4 gap-4">
     <TeamAvailability
       :available-agents="availableAgents"
-      :has-conversation="hasConversation"
+      :has-conversation="canContinueConversation"
       :unread-count="unreadMessageCount"
       @start-conversation="startConversation"
     />
