@@ -8,6 +8,7 @@ import ChatInputWrap from 'widget/components/ChatInputWrap.vue';
 import { BUS_EVENTS } from 'shared/constants/busEvents';
 import { sendEmailTranscript } from 'widget/api/conversation';
 import { useRouter } from 'vue-router';
+import configMixin from 'widget/mixins/configMixin';
 import { IFrameHelper } from '../helpers/utils';
 import { CHATWOOT_ON_START_CONVERSATION } from '../constants/sdkEvents';
 import { emitter } from 'shared/helpers/mitt';
@@ -21,6 +22,7 @@ export default {
     FooterReplyTo,
     FooterChatOptions,
   },
+  mixins: [configMixin],
   setup() {
     const router = useRouter();
     return { router };
@@ -41,6 +43,7 @@ export default {
       currentUser: 'contacts/getCurrentUser',
       isWidgetStyleFlat: 'appConfig/isWidgetStyleFlat',
       pendingInputSelectMessage: 'conversation/getPendingInputSelectMessage',
+      isCreatingConversation: 'conversation/getIsCreating',
     }),
     textColor() {
       return getContrastingTextColor(this.widgetColor);
@@ -69,8 +72,16 @@ export default {
     clearTimeout(this.transcriptCooldownTimer);
   },
   methods: {
-    ...mapActions('conversation', ['sendMessage', 'sendAttachment']),
-    ...mapActions('conversationAttributes', ['getAttributes']),
+    ...mapActions('conversation', [
+      'sendMessage',
+      'sendAttachment',
+      'createConversation',
+      'clearConversations',
+    ]),
+    ...mapActions('conversationAttributes', [
+      'getAttributes',
+      'clearConversationAttributes',
+    ]),
     async handleSendMessage(content) {
       await this.sendMessage({
         content,
@@ -90,13 +101,26 @@ export default {
       });
       this.inReplyTo = null;
     },
-    startNewConversation() {
-      this.router.replace({ name: 'prechat-form' });
+    async startNewConversation() {
+      if (this.isCreatingConversation) {
+        return;
+      }
+
       IFrameHelper.sendMessage({
         event: 'onEvent',
         eventIdentifier: CHATWOOT_ON_START_CONVERSATION,
         data: { hasConversation: true },
       });
+
+      if (this.preChatFormEnabled) {
+        await this.router.replace({ name: 'prechat-form' });
+        return;
+      }
+
+      this.clearConversations();
+      this.clearConversationAttributes();
+      await this.createConversation({});
+      await this.router.replace({ name: 'messages' });
     },
     toggleReplyTo(message) {
       this.inReplyTo = message;
@@ -168,6 +192,7 @@ export default {
       block
       :bg-color="widgetColor"
       :text-color="textColor"
+      :disabled="isCreatingConversation"
       @click="startNewConversation"
     >
       {{ $t('START_NEW_CONVERSATION') }}
