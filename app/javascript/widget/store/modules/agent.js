@@ -20,18 +20,20 @@ const CACHE_KEY_PREFIX = 'chatwoot_available_agents_';
 
 export const actions = {
   fetchAvailableAgents: async ({ commit }, websiteToken) => {
+    const cacheKey = `${CACHE_KEY_PREFIX}${websiteToken}`;
+
     try {
-      const cachedData = getFromCache(`${CACHE_KEY_PREFIX}${websiteToken}`);
+      // Show cached agents immediately, but always re-fetch so avatar URLs stay fresh.
+      const cachedData = getFromCache(cacheKey);
       if (cachedData) {
         commit('setAgents', cachedData);
         commit('setError', false);
         commit('setHasFetched', true);
-        return;
       }
 
       const { data } = await getAvailableAgents(websiteToken);
       const { payload = [] } = data;
-      setCache(`${CACHE_KEY_PREFIX}${websiteToken}`, payload);
+      setCache(cacheKey, payload);
       commit('setAgents', payload);
       commit('setError', false);
       commit('setHasFetched', true);

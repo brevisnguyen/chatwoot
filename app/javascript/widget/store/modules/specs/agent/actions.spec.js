@@ -18,18 +18,29 @@ describe('#actions', () => {
       vi.clearAllMocks();
     });
 
-    it('returns cached data if available', async () => {
+    it('uses cached data then always re-fetches fresh agents', async () => {
+      const freshAgents = [{ ...agents[0], avatar_url: 'https://fresh.url' }];
       getFromCache.mockReturnValue(agents);
+      getAvailableAgents.mockReturnValue({ data: { payload: freshAgents } });
+
       await actions.fetchAvailableAgents({ commit }, websiteToken);
 
       expect(getFromCache).toHaveBeenCalledWith(
         `chatwoot_available_agents_${websiteToken}`
       );
-      expect(getAvailableAgents).not.toHaveBeenCalled();
-      expect(setCache).not.toHaveBeenCalled();
-      expect(commit).toHaveBeenCalledWith('setAgents', agents);
-      expect(commit).toHaveBeenCalledWith('setError', false);
-      expect(commit).toHaveBeenCalledWith('setHasFetched', true);
+      expect(getAvailableAgents).toHaveBeenCalledWith(websiteToken);
+      expect(setCache).toHaveBeenCalledWith(
+        `chatwoot_available_agents_${websiteToken}`,
+        freshAgents
+      );
+      expect(commit.mock.calls).toEqual([
+        ['setAgents', agents],
+        ['setError', false],
+        ['setHasFetched', true],
+        ['setAgents', freshAgents],
+        ['setError', false],
+        ['setHasFetched', true],
+      ]);
     });
 
     it('fetches and caches data if no cache available', async () => {
@@ -70,6 +81,23 @@ describe('#actions', () => {
       });
       await actions.fetchAvailableAgents({ commit }, 'Hi');
       expect(commit.mock.calls).toEqual([
+        ['setError', true],
+        ['setHasFetched', true],
+      ]);
+    });
+
+    it('keeps cached agents when re-fetch fails', async () => {
+      getFromCache.mockReturnValue(agents);
+      getAvailableAgents.mockRejectedValue({
+        message: 'Authentication required',
+      });
+
+      await actions.fetchAvailableAgents({ commit }, websiteToken);
+
+      expect(commit.mock.calls).toEqual([
+        ['setAgents', agents],
+        ['setError', false],
+        ['setHasFetched', true],
         ['setError', true],
         ['setHasFetched', true],
       ]);
