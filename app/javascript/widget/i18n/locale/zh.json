@@ -44,7 +44,7 @@
   },
   "START_CONVERSATION": "开始会话",
   "END_CONVERSATION": "结束对话",
-  "CONTINUE_CONVERSATION": "继续对话",
+  "CONTINUE_CONVERSATION": "开始对话",
   "YOU": "您",
   "START_NEW_CONVERSATION": "开始新的对话",
   "VIEW_UNREAD_MESSAGES": "您有未读消息",
