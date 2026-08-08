@@ -29,7 +29,11 @@ const startConversation = () => {
   <div
     class="flex flex-col gap-3 w-full shadow outline-1 outline outline-n-container rounded-xl bg-n-background dark:bg-n-solid-2 px-5 py-4"
   >
-    <AvailabilityContainer :agents="availableAgents" show-header show-avatars />
+    <AvailabilityContainer
+      :agents="availableAgents"
+      show-header
+      :show-avatars="false"
+    />
 
     <button
       class="inline-flex items-center gap-1 font-medium text-n-slate-12"
