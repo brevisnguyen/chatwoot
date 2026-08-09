@@ -31,23 +31,25 @@ const startConversation = () => {
   >
     <AvailabilityContainer
       :agents="availableAgents"
-      show-header
+      :show-header="false"
       :show-avatars="false"
     />
 
-    <button
-      class="inline-flex items-center gap-1 font-medium text-n-slate-12"
-      :style="{ color: widgetColor }"
-      @click="startConversation"
-    >
-      <span>
-        {{
-          hasConversation
-            ? $t('CONTINUE_CONVERSATION')
-            : $t('START_CONVERSATION')
-        }}
-      </span>
-      <i class="i-lucide-chevron-right size-5 mt-px" />
-    </button>
+    <div class="flex justify-center">
+      <button
+        class="inline-flex items-center gap-1 font-medium text-n-slate-12"
+        :style="{ color: widgetColor }"
+        @click="startConversation"
+      >
+        <span>
+          {{
+            hasConversation
+              ? $t('CONTINUE_CONVERSATION')
+              : $t('START_CONVERSATION')
+          }}
+        </span>
+        <i class="i-lucide-chevron-right size-5 mt-px" />
+      </button>
+    </div>
   </div>
 </template>
