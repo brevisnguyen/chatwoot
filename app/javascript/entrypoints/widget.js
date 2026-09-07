@@ -15,6 +15,7 @@ import {
   startsWithPlus,
   isPhoneNumberValidWithDialCode,
 } from 'shared/helpers/Validators';
+import { decodeWebChannelTextFields } from '../widget/helpers/webChannelConfig';
 
 const i18n = createI18n({
   legacy: false, // https://github.com/intlify/vue-i18n/issues/1902
@@ -45,7 +46,8 @@ app.use(
 
 // Vue.config.productionTip = false;
 
-window.onload = () => {
+window.onload = async () => {
+  await decodeWebChannelTextFields();
   window.WOOT_WIDGET = app.mount('#app');
   window.actionCable = new ActionCableConnector(
     window.WOOT_WIDGET,
