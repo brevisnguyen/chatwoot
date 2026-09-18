@@ -1082,16 +1082,23 @@ describe('#mutations', () => {
   describe('#UPDATE_ASSIGNEE', () => {
     it('should update assignee on conversation', () => {
       const state = {
-        allConversations: [{ id: 1, meta: { assignee: null } }],
+        allConversations: [
+          {
+            id: 1,
+            meta: { assignee: null, assignee_type: 'AgentBot' },
+          },
+        ],
       };
 
       const payload = {
         id: 1,
         assignee: { id: 1, name: 'Agent' },
+        assignee_type: 'User',
       };
 
       mutations[types.UPDATE_ASSIGNEE](state, payload);
       expect(state.allConversations[0].meta.assignee).toEqual(payload.assignee);
+      expect(state.allConversations[0].meta.assignee_type).toEqual('User');
     });
   });
 

@@ -298,6 +298,9 @@ export const mutations = {
     const chat = getConversationById(_state)(payload.id);
     if (chat) {
       chat.meta.assignee = payload.assignee;
+      if (payload.assignee_type !== undefined) {
+        chat.meta.assignee_type = payload.assignee_type;
+      }
     }
   },
 

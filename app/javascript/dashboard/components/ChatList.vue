@@ -135,12 +135,6 @@ const advancedFilterTypes = ref(
 
 const currentUser = useMapGetter('getCurrentUser');
 const chatLists = useMapGetter('getFilteredConversations');
-const mineChatsList = useMapGetter('getMineChats');
-const allChatList = useMapGetter('getAllStatusChats');
-const unAssignedChatsList = useMapGetter('getUnAssignedChats');
-const participatingChatsList = useMapGetter('getParticipatingChats');
-const botChatsList = useMapGetter('getBotChats');
-const collaboratorsChatsList = useMapGetter('getCollaboratorsChats');
 const chatListLoading = useMapGetter('getChatListLoadingStatus');
 const activeInbox = useMapGetter('getSelectedInbox');
 const conversationStats = useMapGetter('conversationStats/getStats');
@@ -341,6 +335,24 @@ const conversationFilters = computed(() => {
   };
 });
 
+// Function getters must be called inside a computed so Vue tracks allConversations
+// updates (assignee/status changes). useMapGetter alone only caches the function.
+const mineChatsList = useFunctionGetter('getMineChats', conversationFilters);
+const allChatList = useFunctionGetter('getAllStatusChats', conversationFilters);
+const unAssignedChatsList = useFunctionGetter(
+  'getUnAssignedChats',
+  conversationFilters
+);
+const participatingChatsList = useFunctionGetter(
+  'getParticipatingChats',
+  conversationFilters
+);
+const botChatsList = useFunctionGetter('getBotChats', conversationFilters);
+const collaboratorsChatsList = useFunctionGetter(
+  'getCollaboratorsChats',
+  conversationFilters
+);
+
 const activeTeam = computed(() => {
   if (props.teamId) {
     return getTeamFn.value(props.teamId);
@@ -409,28 +421,25 @@ const conversationList = computed(() => {
   let localConversationList = [];
 
   if (!hasAppliedFiltersOrActiveFolders.value) {
-    const filters = conversationFilters.value;
     if (
       props.conversationType === wootConstants.CONVERSATION_TYPE.PARTICIPATING
     ) {
-      localConversationList = filterByAssigneeTab(
-        participatingChatsList.value(filters)
-      );
+      localConversationList = filterByAssigneeTab(participatingChatsList.value);
     } else if (activeAssigneeTab.value === 'me') {
-      localConversationList = [...mineChatsList.value(filters)];
+      localConversationList = [...mineChatsList.value];
     } else if (activeAssigneeTab.value === 'unassigned') {
-      localConversationList = [...unAssignedChatsList.value(filters)];
+      localConversationList = [...unAssignedChatsList.value];
     } else if (
       activeAssigneeTab.value === wootConstants.ASSIGNEE_TYPE_EXTRA.AGENT_BOT
     ) {
-      localConversationList = [...botChatsList.value(filters)];
+      localConversationList = [...botChatsList.value];
     } else if (
       activeAssigneeTab.value ===
       wootConstants.ASSIGNEE_TYPE_EXTRA.COLLABORATORS
     ) {
-      localConversationList = [...collaboratorsChatsList.value(filters)];
+      localConversationList = [...collaboratorsChatsList.value];
     } else {
-      localConversationList = [...allChatList.value(filters)];
+      localConversationList = [...allChatList.value];
     }
   } else {
     localConversationList = [...chatLists.value];
@@ -996,8 +1005,8 @@ watch(activeFolder, (newVal, oldVal) => {
   resetAndFetchData();
 });
 
-watch(chatLists, () => {
-  chatsOnView.value = conversationList.value;
+watch(conversationList, newList => {
+  chatsOnView.value = newList;
 });
 
 watch(conversationFilters, (newVal, oldVal) => {
