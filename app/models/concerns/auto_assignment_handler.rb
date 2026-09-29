@@ -63,6 +63,7 @@ module AutoAssignmentHandler
     return if assignee_online_for_assignment?
     return if inbox.available_agents.empty?
 
-    update_columns(assignee_id: nil) # rubocop:disable Rails/SkipsModelValidations
+    # Bump updated_at so the dashboard does not treat the follow-up realtime event as stale.
+    update_columns(assignee_id: nil, updated_at: Time.current) # rubocop:disable Rails/SkipsModelValidations
   end
 end

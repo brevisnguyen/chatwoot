@@ -175,6 +175,8 @@ export function useConversationHotKeys() {
     store.dispatch('assignAgent', {
       conversationId: currentChat.value.id,
       agentId: action.agentInfo.id,
+      // The "None" option has id 0 and unassigns the conversation.
+      assigneeType: action.agentInfo.id ? 'User' : null,
     });
   };
 

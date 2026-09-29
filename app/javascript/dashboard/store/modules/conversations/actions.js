@@ -9,6 +9,7 @@ import {
   isOnParticipatingView,
   isOnUnattendedView,
   isOnFoldersView,
+  setContacts,
 } from './helpers/actionHelpers';
 import messageReadActions from './actions/messageReadActions';
 import messageTranslateActions from './actions/messageTranslateActions';
@@ -38,6 +39,41 @@ const actions = {
       const response = await ConversationApi.show(conversationId);
       commit(types.UPDATE_CONVERSATION, response.data);
       commit(`contacts/${types.SET_CONTACT_ITEM}`, response.data.meta.sender);
+    } catch (error) {
+      // Ignore error
+    }
+  },
+
+  // Reconciles the local list with the server when the tab count differs from it:
+  // merges conversations the list is missing and refreshes local ones the server no
+  // longer returns for the tab (they missed a realtime update and are stale).
+  syncConversationList: async ({ commit, dispatch }, { filters, localIds }) => {
+    try {
+      const {
+        data: { data },
+      } = await ConversationApi.get({ ...filters, page: 1 });
+      const { payload: conversationList } = data;
+      commit(types.SET_ALL_CONVERSATION, conversationList);
+      dispatch(
+        'conversationLabels/setBulkConversationLabels',
+        conversationList
+      );
+      setContacts(commit, conversationList);
+
+      const serverIds = new Set(conversationList.map(({ id }) => id));
+      const staleIds = localIds.filter(id => !serverIds.has(id));
+      await Promise.all(
+        staleIds.map(async id => {
+          try {
+            const response = await ConversationApi.show(id);
+            commit(types.UPDATE_CONVERSATION, response.data);
+          } catch (error) {
+            if (error.response?.status === 404) {
+              commit(types.DELETE_CONVERSATION, id);
+            }
+          }
+        })
+      );
     } catch (error) {
       // Ignore error
     }
@@ -391,7 +427,6 @@ const actions = {
       !isOnFoldersView(rootState) &&
       !isOnMentionsView(rootState) &&
       !isOnParticipatingView(rootState) &&
-      !isOnUnattendedView(rootState) &&
       isMatchingInboxFilter
     ) {
       commit(types.ADD_CONVERSATION, conversation);

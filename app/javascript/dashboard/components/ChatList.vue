@@ -33,6 +33,7 @@ import { useEmitter } from 'dashboard/composables/emitter';
 import { useConversationRequiredAttributes } from 'dashboard/composables/useConversationRequiredAttributes';
 
 import { emitter } from 'shared/helpers/mitt';
+import { BUS_EVENTS } from 'shared/constants/busEvents';
 
 import wootConstants from 'dashboard/constants/globals';
 import advancedFilterOptions from './widgets/conversation/advancedFilterItems';
@@ -918,10 +919,15 @@ function toggleSelectAll(check) {
   selectAllConversations(check, conversationList);
 }
 
-useEmitter('fetch_conversation_stats', () => {
+function fetchConversationStats() {
   if (hasAppliedFiltersOrActiveFolders.value) return;
   store.dispatch('conversationStats/get', conversationFilters.value);
-});
+}
+
+useEmitter('fetch_conversation_stats', fetchConversationStats);
+// Events missed while disconnected can leave conversations stale; refreshing the
+// stats lets the reconciliation below detect and fix them.
+useEmitter(BUS_EVENTS.WEBSOCKET_RECONNECT_COMPLETED, fetchConversationStats);
 
 onMounted(() => {
   store.dispatch('setChatListFilters', conversationFilters.value);
@@ -1008,6 +1014,44 @@ watch(activeFolder, (newVal, oldVal) => {
 watch(conversationList, newList => {
   chatsOnView.value = newList;
 });
+
+// The tab count comes from the server while the list is filtered from the local store.
+// When they differ, some conversations missed a realtime update, so sync the list with
+// the server. Skipped when both exceed a page, since the gap is then just pagination.
+// The last synced state is remembered so a mismatch that a sync cannot resolve (e.g.
+// the server counting differently from the local filter) does not refetch forever.
+let lastSyncedListState = '';
+watch(
+  () => conversationStats.value.updatedOn,
+  () => {
+    if (hasAppliedFiltersOrActiveFolders.value || props.conversationType) {
+      return;
+    }
+    const conversationsPerPage = 25;
+    const localIds = conversationList.value.map(({ id }) => id);
+    const serverCount = activeAssigneeTabCount.value;
+    if (serverCount === localIds.length) return;
+    if (
+      serverCount > conversationsPerPage &&
+      localIds.length >= conversationsPerPage
+    ) {
+      return;
+    }
+
+    const listState = JSON.stringify([
+      conversationFilters.value,
+      serverCount,
+      localIds,
+    ]);
+    if (listState === lastSyncedListState) return;
+    lastSyncedListState = listState;
+
+    store.dispatch('syncConversationList', {
+      filters: conversationFilters.value,
+      localIds,
+    });
+  }
+);
 
 watch(conversationFilters, (newVal, oldVal) => {
   if (newVal !== oldVal) {

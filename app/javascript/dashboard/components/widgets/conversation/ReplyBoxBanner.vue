@@ -31,13 +31,16 @@ const assignedAgent = computed({
   },
   set(agent) {
     const agentId = agent ? agent.id : null;
+    const assigneeType = agent ? 'User' : null;
     store.dispatch('setCurrentChatAssignee', {
       conversationId: currentChat.value?.id,
       assignee: agent,
+      assigneeType,
     });
     store.dispatch('assignAgent', {
       conversationId: currentChat.value?.id,
       agentId,
+      assigneeType,
     });
   },
 });
