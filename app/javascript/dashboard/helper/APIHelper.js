@@ -1,4 +1,5 @@
 import Auth from '../api/auth';
+import { rewriteAttachmentHost } from './attachmentHost';
 
 const parseErrorCode = error => Promise.reject(error);
 
@@ -24,7 +25,10 @@ export default axios => {
   }
   // Response parsing interceptor
   wootApi.interceptors.response.use(
-    response => response,
+    response => {
+      response.data = rewriteAttachmentHost(response.data);
+      return response;
+    },
     error => parseErrorCode(error)
   );
   return wootApi;

@@ -14,6 +14,7 @@ import {
 import { VOICE_CALL_PROVIDERS } from 'dashboard/helper/inbox';
 import { VOICE_CALL_DIRECTION } from 'dashboard/components-next/message/constants';
 import { FEATURE_FLAGS } from 'dashboard/featureFlags';
+import { rewriteAttachmentHost } from './attachmentHost';
 
 const { isImpersonating } = useImpersonation();
 const UNREAD_COUNTS_REFETCH_THROTTLE_MS = 5000;
@@ -76,6 +77,9 @@ class ActionCableConnector extends BaseActionCableConnector {
   onDisconnected = () => {
     emitter.emit(BUS_EVENTS.WEBSOCKET_DISCONNECT);
   };
+
+  // eslint-disable-next-line class-methods-use-this
+  transformData = data => rewriteAttachmentHost(data);
 
   isAValidEvent = data => {
     // user:logout is scoped to the user pubsub stream and may omit account_id
