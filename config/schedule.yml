@@ -81,3 +81,10 @@ remove_expired_messages_job:
   cron: '*/30 * * * *'
   class: 'Internal::RemoveExpiredMessagesJob'
   queue: housekeeping
+
+# executed daily at 2000 UTC
+# to remove direct uploads that were never attached nor submitted in a form
+remove_abandoned_uploads_job:
+  cron: '0 20 * * *'
+  class: 'Internal::RemoveAbandonedUploadsJob'
+  queue: housekeeping

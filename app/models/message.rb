@@ -136,6 +136,7 @@ class Message < ApplicationRecord
   has_many :notifications, as: :primary_actor, dependent: :destroy_async
 
   after_create_commit :execute_after_create_commit_callbacks
+  after_destroy_commit :purge_form_image_blobs, if: :form?
 
   after_update_commit :dispatch_update_event
   after_commit :reindex_for_search, if: :should_index?, on: [:create, :update]
@@ -163,6 +164,10 @@ class Message < ApplicationRecord
     attrs = content_attributes.deep_dup
     enrich_form_image_urls!(attrs)
     attrs
+  end
+
+  def form_image_blobs
+    form_image_values(content_attributes).filter_map { |sv| ActiveStorage::Blob.find_signed(sv['value']) }
   end
 
   def conversation_push_event_data
@@ -295,17 +300,18 @@ class Message < ApplicationRecord
 
   private
 
+  # Form image fields hold the signed id of a direct-uploaded blob that is never attached to a record
+  def form_image_values(attrs)
+    image_names = Array(attrs['items']).select { |i| i['type'] == 'image' }.pluck('name')
+    Array(attrs['submitted_values']).select { |sv| image_names.include?(sv['name']) && sv['value'].present? }
+  end
+
+  def purge_form_image_blobs
+    form_image_blobs.each(&:purge_later)
+  end
+
   def enrich_form_image_urls!(attrs)
-    items = attrs['items']
-    sv_list = attrs['submitted_values']
-    return if items.blank? || sv_list.blank?
-
-    image_names = items.select { |i| i['type'] == 'image' }.map { |i| i['name'] }.to_set
-    return if image_names.empty?
-
-    sv_list.each do |sv|
-      next unless image_names.include?(sv['name']) && sv['value'].present?
-
+    form_image_values(attrs).each do |sv|
       blob = ActiveStorage::Blob.find_signed(sv['value'])
       next unless blob
 
