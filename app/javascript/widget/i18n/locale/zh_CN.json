@@ -98,6 +98,8 @@
   "FILE_SIZE_LIMIT": "文件超过大小 {MAXIMUM_FILE_UPLOAD_SIZE} 附件限制",
   "CHAT_FORM": {
     "UPLOAD_IMAGE": "选择图片",
+    "VIEW_IMAGE": "点击放大",
+    "CLOSE": "关闭",
     "INVALID": {
       "FIELD": "无效字段",
       "IMAGE_TYPE": "请选择图片文件",

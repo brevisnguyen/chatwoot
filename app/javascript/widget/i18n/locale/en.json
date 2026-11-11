@@ -98,6 +98,8 @@
   "FILE_SIZE_LIMIT": "File exceeds the {MAXIMUM_FILE_UPLOAD_SIZE} attachment limit",
   "CHAT_FORM": {
     "UPLOAD_IMAGE": "Choose image",
+    "VIEW_IMAGE": "Tap to enlarge",
+    "CLOSE": "Close",
     "INVALID": {
       "FIELD": "Invalid field",
       "IMAGE_TYPE": "Please select an image file",

@@ -8,9 +8,10 @@ import {
 } from 'shared/helpers/FileHelper';
 import Spinner from 'shared/components/Spinner.vue';
 import FluentIcon from 'shared/components/FluentIcon/Index.vue';
+import ImageViewer from 'shared/components/ImageViewer.vue';
 
 export default {
-  components: { Spinner, FluentIcon },
+  components: { Spinner, FluentIcon, ImageViewer },
   props: {
     buttonLabel: {
       type: String,
@@ -35,6 +36,7 @@ export default {
       formValues: {},
       hasSubmitted: false,
       imageUploads: {},
+      viewerSrc: '',
     };
   },
   computed: {
@@ -49,9 +51,6 @@ export default {
       return resolveMaximumFileUploadSize(
         this.globalConfig.maximumFileUploadSize
       );
-    },
-    directUploadsEnabled() {
-      return !!this.globalConfig.directUploadsEnabled;
     },
     isAnyImageUploading() {
       return Object.values(this.imageUploads).some(
@@ -250,7 +249,7 @@ export default {
             :ref="`imageInput_${item.name}`"
             type="file"
             accept="image/*"
-            class="hidden"
+            class="hidden reset-base"
             @change="onImageFileChange($event, item)"
           />
           <div
@@ -260,7 +259,8 @@ export default {
             <img
               :src="imageUploads[item.name].previewUrl"
               alt=""
-              class="max-w-[200px] max-h-[200px] rounded-lg object-cover"
+              class="max-w-[200px] max-h-[200px] rounded-lg object-cover cursor-zoom-in"
+              @click="viewerSrc = imageUploads[item.name].previewUrl"
             />
             <button
               v-if="imageUploads[item.name]?.status !== 'uploading'"
@@ -280,11 +280,10 @@ export default {
           <button
             v-else
             type="button"
-            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg border border-dashed border-n-slate-7 text-n-slate-11 hover:border-n-slate-9 hover:text-n-slate-12 dark:bg-n-alpha-black1"
-            :disabled="!directUploadsEnabled"
+            class="flex flex-col items-center justify-center w-full gap-1 px-3 py-5 text-sm border-2 border-dashed rounded-lg border-n-slate-7 text-n-slate-11 hover:border-n-brand hover:text-n-slate-12 dark:bg-n-alpha-black1"
             @click="triggerImageInput(item)"
           >
-            <FluentIcon icon="image" size="16" />
+            <span class="i-lucide-image-plus size-6" />
             {{ $t('CHAT_FORM.UPLOAD_IMAGE') }}
           </button>
           <span
@@ -320,6 +319,7 @@ export default {
         {{ buttonLabel || $t('COMPONENTS.FORM_BUBBLE.SUBMIT') }}
       </button>
     </form>
+    <ImageViewer v-if="viewerSrc" :src="viewerSrc" @close="viewerSrc = ''" />
   </div>
 </template>
 

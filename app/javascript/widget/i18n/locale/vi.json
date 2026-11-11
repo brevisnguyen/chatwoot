@@ -98,6 +98,8 @@
   "FILE_SIZE_LIMIT": "Tệp vượt quá kích thước giới hạn {MAXIMUM_FILE_UPLOAD_SIZE}",
   "CHAT_FORM": {
     "UPLOAD_IMAGE": "Chọn ảnh",
+    "VIEW_IMAGE": "Nhấn để phóng to",
+    "CLOSE": "Đóng",
     "INVALID": {
       "FIELD": "Trường không hợp lệ",
       "IMAGE_TYPE": "Vui lòng chọn tệp hình ảnh",

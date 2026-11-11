@@ -98,6 +98,8 @@
   "FILE_SIZE_LIMIT": "{MAXIMUM_FILE_UPLOAD_SIZE} 已超出檔案大小限制",
   "CHAT_FORM": {
     "UPLOAD_IMAGE": "選擇圖片",
+    "VIEW_IMAGE": "點擊放大",
+    "CLOSE": "關閉",
     "INVALID": {
       "FIELD": "無效的欄位",
       "IMAGE_TYPE": "請選擇圖片檔案",
