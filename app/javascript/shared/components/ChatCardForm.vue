@@ -54,7 +54,7 @@ const normalizedDescription = computed(() =>
     >
       <img class="w-full h-auto object-contain max-h-80" :src="mediaUrl" />
       <span
-        class="absolute bottom-2 flex items-center gap-1 px-2 py-1 text-xs text-white rounded-full ltr:right-2 rtl:left-2 bg-black/60"
+        class="absolute bottom-2 flex items-center gap-1 px-2 py-1 text-xs text-white rounded-full ltr:right-2 rtl:left-2 bg-modal-backdrop-dark"
       >
         <span class="i-lucide-zoom-in size-3.5" />
         {{ $t('CHAT_FORM.VIEW_IMAGE') }}

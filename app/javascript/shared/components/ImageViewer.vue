@@ -23,7 +23,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
 <template>
   <Teleport to="body">
     <div
-      class="fixed inset-0 z-[9999] overflow-auto bg-black/90"
+      class="fixed inset-0 z-[9999] overflow-auto bg-[rgb(0_0_0/0.9)]"
       @click.self="emit('close')"
     >
       <button
