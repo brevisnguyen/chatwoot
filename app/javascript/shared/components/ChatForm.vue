@@ -105,7 +105,8 @@ export default {
       });
     },
     triggerImageInput(item) {
-      this.$refs[`imageInput_${item.name}`].click();
+      // Refs inside v-for are arrays in Vue 3
+      this.$refs[`imageInput_${item.name}`][0].click();
     },
     onImageFileChange(event, item) {
       const file = event.target.files[0];
@@ -173,7 +174,7 @@ export default {
       }
       this.imageUploads[item.name] = { status: 'idle', previewUrl: '' };
       this.formValues[item.name] = '';
-      const input = this.$refs[`imageInput_${item.name}`];
+      const [input] = this.$refs[`imageInput_${item.name}`];
       if (input) input.value = '';
     },
   },
