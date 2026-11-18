@@ -3,6 +3,8 @@ import TeamAvailability from 'widget/components/TeamAvailability.vue';
 import { mapGetters, mapActions } from 'vuex';
 import { useRouter } from 'vue-router';
 import configMixin from 'widget/mixins/configMixin';
+import { emitter } from 'shared/helpers/mitt';
+import { BUS_EVENTS } from 'shared/constants/busEvents';
 import ArticleContainer from '../components/pageComponents/Home/Article/ArticleContainer.vue';
 export default {
   name: 'Home',
@@ -47,23 +49,29 @@ export default {
         return;
       }
 
-      const shouldStartNew =
-        !this.hasConversation || this.mustStartNewConversation;
+      try {
+        const shouldStartNew =
+          !this.hasConversation || this.mustStartNewConversation;
 
-      if (this.preChatFormEnabled && shouldStartNew) {
-        await this.router.replace({ name: 'prechat-form' });
-        return;
-      }
-
-      if (shouldStartNew) {
-        if (this.mustStartNewConversation) {
-          this.clearConversations();
-          this.clearConversationAttributes();
+        if (this.preChatFormEnabled && shouldStartNew) {
+          await this.router.replace({ name: 'prechat-form' });
+          return;
         }
-        await this.createConversation({});
-      }
 
-      await this.router.replace({ name: 'messages' });
+        if (shouldStartNew) {
+          if (this.mustStartNewConversation) {
+            this.clearConversations();
+            this.clearConversationAttributes();
+          }
+          await this.createConversation({});
+        }
+
+        await this.router.replace({ name: 'messages' });
+      } catch (error) {
+        emitter.emit(BUS_EVENTS.SHOW_ALERT, {
+          message: this.$t('START_CONVERSATION_ERROR'),
+        });
+      }
     },
   },
 };
@@ -75,6 +83,7 @@ export default {
       :available-agents="availableAgents"
       :has-conversation="canContinueConversation"
       :unread-count="unreadMessageCount"
+      :is-loading="isCreatingConversation"
       @start-conversation="startConversation"
     />
 

@@ -3,10 +3,12 @@ import { IFrameHelper } from 'widget/helpers/utils';
 import { CHATWOOT_ON_START_CONVERSATION } from '../constants/sdkEvents';
 import AvailabilityContainer from 'widget/components/Availability/AvailabilityContainer.vue';
 import { useMapGetter } from 'dashboard/composables/store.js';
+import Spinner from 'shared/components/Spinner.vue';
 
 const props = defineProps({
   availableAgents: { type: Array, default: () => [] },
   hasConversation: { type: Boolean, default: false },
+  isLoading: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(['startConversation']);
@@ -37,10 +39,12 @@ const startConversation = () => {
 
     <div class="flex justify-center">
       <button
-        class="inline-flex items-center gap-1 font-medium text-n-slate-12"
+        class="inline-flex items-center gap-1 font-medium text-n-slate-12 disabled:opacity-60"
         :style="{ color: widgetColor }"
+        :disabled="isLoading"
         @click="startConversation"
       >
+        <Spinner v-if="isLoading" class="p-0" />
         <span>
           {{
             hasConversation

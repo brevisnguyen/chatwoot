@@ -46,6 +46,12 @@ app.use(
 
 // Vue.config.productionTip = false;
 
+// A long-lived widget page (e.g. restored by iOS Safari) can reference lazy
+// chunks removed by a newer deploy; reload to pick up the current build.
+window.addEventListener('vite:preloadError', () => {
+  window.location.reload();
+});
+
 window.onload = async () => {
   await decodeWebChannelTextFields();
   window.WOOT_WIDGET = app.mount('#app');

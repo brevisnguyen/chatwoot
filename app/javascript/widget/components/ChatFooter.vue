@@ -112,15 +112,21 @@ export default {
         data: { hasConversation: true },
       });
 
-      if (this.preChatFormEnabled) {
-        await this.router.replace({ name: 'prechat-form' });
-        return;
-      }
+      try {
+        if (this.preChatFormEnabled) {
+          await this.router.replace({ name: 'prechat-form' });
+          return;
+        }
 
-      this.clearConversations();
-      this.clearConversationAttributes();
-      await this.createConversation({});
-      await this.router.replace({ name: 'messages' });
+        this.clearConversations();
+        this.clearConversationAttributes();
+        await this.createConversation({});
+        await this.router.replace({ name: 'messages' });
+      } catch (error) {
+        emitter.emit(BUS_EVENTS.SHOW_ALERT, {
+          message: this.$t('START_CONVERSATION_ERROR'),
+        });
+      }
     },
     toggleReplyTo(message) {
       this.inReplyTo = message;
